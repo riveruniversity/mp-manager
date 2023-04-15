@@ -16,9 +16,24 @@ export function getBlankCardIds() {
 
     const table = `Group_Participants`
     const select = `$select=Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name`
-    const filter = `&$filter=Group_ID=500 AND Participant_ID_Table_Contact_ID_Table.ID_Card IS null`
+    const filter = `&$filter=Group_ID=${process.env.GRP_WVR} AND Participant_ID_Table_Contact_ID_Table.ID_Card IS null`
+    const top = `&$top=5000`
 
-    return request(table, {method: 'get', select, filter})
+    return request(table, {method: 'get', select, filter, top})
+}
+//: --------------------------------------------------------
+
+
+export function getRiverMembers() {
+
+    const table = `Group_Participants`
+    const select = `$select=Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name`
+    const filter = `&$filter=Group_ID=${process.env.GRP_WVR} AND Group_ID=${process.env.GRP_MMBR} AND Group_Participants.Group_ID NOT IN (${process.env.GRP_STFF},${process.env.GRP_INTR},${process.env.GRP_CNTR})`
+    const top = `&$top=5000`
+
+    console.log(filter)
+
+    return request(table, {method: 'get', select, filter, top})
 }
 //: --------------------------------------------------------
 
@@ -27,7 +42,7 @@ export function getFormResponses(eid: number) {
 
     const table = `Form_Responses`
     const select = `$select=Form_Responses.Contact_ID, Form_Responses.Phone_Number, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name`
-    const filter = `&$filter=Event_ID=${eid} AND Phone_Number is not null`
+    const filter = `&$filter=Event_ID=${eid} AND Phone_Number is not null AND Contact_ID_Table.ID_Card is null` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'
     const top = `&$top=5000`
 
     return request(table, {method: 'get', select, filter, top})
@@ -52,7 +67,7 @@ async function request(table: string, param: Parameter) {
     
     var config = {
         method: param.method,
-        url: baseUrl + param.select + param.filter,
+        url: baseUrl + param.select + param.filter + param.top,
         headers: { 
             'Authorization': 'Bearer ' + process.env.TOKEN,
             'Content-Type': 'application/json'
@@ -65,7 +80,9 @@ async function request(table: string, param: Parameter) {
         return response.data;
     } catch (error: any) {
         console.log(error.response.data);
-        console.log(param.data);
+        //console.log('Error when requesting ', param.data);
+        console.log(error.response.status, error.response.statusText);
+        
     }
 }
 //: --------------------------------------------------------
