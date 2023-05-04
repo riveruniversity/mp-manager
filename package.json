@@ -8,7 +8,9 @@
   "keywords": [],
   "scripts": {
     "start": "nodemon",
-    "dev": "npx nodemon src/index.ts"
+    "dev": "npx nodemon src/index.ts",
+    "find": "npx nodemon src/tasks/find.ts  --ext ts",
+    "populate": "npx nodemon src/tasks/populate.ts  --ext ts"
   },
   "dependencies": {
     "axios": "^1.1.3",

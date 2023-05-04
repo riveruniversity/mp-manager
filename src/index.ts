@@ -1,28 +1,17 @@
 import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage } from './api'
 import * as fs from 'fs'
 
-interface Contact {
-  Contact_ID: number;
-  Group_ID: number;
-  ID_Card: null | string;
-  Display_Name: string;
-  First_Name: string;
-  Last_Name: string;
-  Mobile_Phone: string;
-  Image: string | null;
-  Img: Buffer;
-}
+import { Contact } from './types'
+import { groupBy } from './util'
 
 const staffGroupIds: number[] = [490, 491, 363]
 
-async function populateCardId() {
-  const eventId = 68302
-  // const contacts = await getBlankCardIds()
-  // const contacts = await getFormResponses(eventId)
-  // const contacts = await getRiverMembers();
-  const contacts = await getAllRiverMembers();
-  // const riverStaff = await getRiverStaff();
 
+
+
+async function getAllRiverMembersInfo() {
+
+  const contacts = await getAllRiverMembers();
   if (!contacts) return
 
   console.log(`${contacts.length} contacts`)
@@ -39,38 +28,10 @@ async function populateCardId() {
   // fs.writeFileSync('./src/cleanMembers.json', JSON.stringify(cleanMembersArr, null, '\t'));
   fs.writeFileSync('./src/membersWithPic.json', JSON.stringify(membersWithPic, null, '\t'));
 
-  // updateCardId(cleanMembersArr);
 }
 
-populateCardId()
+getAllRiverMembersInfo()
 
 
 
-function updateCardId(arr: Contact[]) {
-  arr.forEach((contact: Contact) => {
-    putCardId(contact.Contact_ID, "M-" + contact.Contact_ID).then((card) => console.log('success', card[0].Contact_ID, card[0].First_Name))
-  })
-}
 
-
-function groupBy(array: any[], key: string) {
-  const participants: any[] = [];
-
-  var outObject = array.reduce(function (a, e) {
-    // GROUP BY estimated key (estKey), well, may be a just plain key
-    // a -- Accumulator result object
-    // e -- sequentially checked Element, the Element that is tested just at this iteration
-
-    // new grouping name may be calculated, but must be based on real value of real field
-    let estKey = (e[key]);
-
-    (a[estKey] ? a[estKey] : (a[estKey] = null || [])).push(e);
-    return a;
-  }, {});
-
-  for (var key in outObject) {
-    participants.push(outObject[key]);
-  }
-
-  return participants;
-}

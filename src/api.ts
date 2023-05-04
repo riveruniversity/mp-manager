@@ -3,14 +3,9 @@ import { AxiosResponse } from 'axios'
 import dotenv from 'dotenv';
 
 dotenv.config();
+// import { Parameter } from './types'
+import { group } from './vars'
 
-const g = {
-  member: 504,
-  staff: 490,
-  contractor: 491,
-  intern: 363,
-  waiver: 500
-}
 
 interface Parameter {
   method: 'get' | 'post' | 'put';
@@ -22,11 +17,24 @@ interface Parameter {
   responseType?: ResponseType;
 }
 
+// 
+export function getContact(fltr: string) {
+
+  const table = `Group_Participants`
+  const select = `$select=Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name, Participant_ID_Table_Contact_ID_Table.First_Name, Participant_ID_Table_Contact_ID_Table.Last_Name, Participant_ID_Table_Contact_ID_Table.Mobile_Phone, Participant_ID_Table_Contact_ID_Table.Email_Address`
+  const filter = `&$filter=Group_ID=${group.waiver} AND ${fltr} AND Participant_ID_Table_Contact_ID_Table.Contact_ID>20`
+  const top = `&$top=5000`
+
+  return request(table, { method: 'get', select, filter, top })
+}
+//: --------------------------------------------------------
+
+
 export function getBlankCardIds() {
 
   const table = `Group_Participants`
   const select = `$select=Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name`
-  const filter = `&$filter=Group_ID=${g.waiver} AND Participant_ID_Table_Contact_ID_Table.ID_Card IS null AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
+  const filter = `&$filter=Group_ID=${group.waiver} AND Participant_ID_Table_Contact_ID_Table.ID_Card IS null AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
   const top = `&$top=5000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -37,7 +45,7 @@ export function getAllRiverMembers() {
 
   const table = `Group_Participants`
   const select = `$select=Group_Participants.Group_ID, Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.First_Name, Participant_ID_Table_Contact_ID_Table.Last_Name, Participant_ID_Table_Contact_ID_Table.Mobile_Phone, Participant_ID_Table_Contact_ID_Table.dp_fileUniqueId Image`
-  const filter = `&$filter=Group_Participants.Group_ID IN (${g.waiver},${g.member},${g.staff},${g.intern},${g.contractor}) AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20 AND Participant_ID_Table.Participant_Engagement_ID=1` // AND Not Participant_ID_Table_Contact_ID_Table.ID_Card Like 'M-%'   ||  AND Participant_ID_Table_Contact_ID_Table.Contact_ID=126634
+  const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20 AND Participant_ID_Table.Participant_Engagement_ID=1` // AND Not Participant_ID_Table_Contact_ID_Table.ID_Card Like 'M-%'   ||  AND Participant_ID_Table_Contact_ID_Table.Contact_ID=126634
   const top = `&$top=50000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -49,7 +57,7 @@ export function getRiverMembers() {
 
   const table = `Group_Participants`
   const select = `$select=Group_Participants.Group_ID, Group_Participants.Group_Participant_ID, Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name`
-  const filter = `&$filter=Group_Participants.Group_ID IN (${g.waiver},${g.member}) AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20` // AND Participant_ID_Table_Contact_ID_Table.Contact_ID=126634
+  const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member}) AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20` // AND Participant_ID_Table_Contact_ID_Table.Contact_ID=126634
   const top = `&$top=50000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -61,7 +69,7 @@ export function getRiverStaff() {
 
   const table = `Group_Participants`
   const select = `$select=Group_Participants.Group_ID, Group_Participants.Group_Participant_ID, Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name`
-  const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${g.staff},${g.intern},${g.contractor}) AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
+  const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff},${group.intern},${group.contractor}) AND NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
   const top = `&$top=1000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -125,7 +133,7 @@ async function request(table: string, param: Parameter) {
     const response: AxiosResponse = await axios(config);
     return response.data;
   } catch (error: any) {
-    console.log(error.cause);
+    console.log('cause', error.cause);
     console.log('Error when requesting ', config.url);
     console.log(error.response?.status, error.response?.statusText);
 
