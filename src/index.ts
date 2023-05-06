@@ -1,4 +1,4 @@
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage } from './api'
+import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage } from './api/api'
 import * as fs from 'fs'
 
 import { Contact } from './types'

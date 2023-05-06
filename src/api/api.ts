@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 // import { Parameter } from './types'
-import { group } from './vars'
+import { group } from '../vars'
 
 
 interface Parameter {
@@ -17,12 +17,13 @@ interface Parameter {
   responseType?: ResponseType;
 }
 
-// 
+
+
 export function getContact(fltr: string) {
 
   const table = `Group_Participants`
-  const select = `$select=Participant_ID_Table_Contact_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.ID_Card, Participant_ID_Table_Contact_ID_Table.Display_Name, Participant_ID_Table_Contact_ID_Table.First_Name, Participant_ID_Table_Contact_ID_Table.Last_Name, Participant_ID_Table_Contact_ID_Table.Mobile_Phone, Participant_ID_Table_Contact_ID_Table.Email_Address`
-  const filter = `&$filter=Group_ID=${group.waiver} AND ${fltr} AND Participant_ID_Table_Contact_ID_Table.Contact_ID>20`
+  const select = `$select=${Show.Contact_ID}, ${Show.ID_Card}, ${Show.Display_Name}, ${Show.First_Name}, ${Show.Last_Name}, ${Show.Mobile_Phone}, ${Show.Email_Address}`
+  const filter = `&$filter=${Signed_Waiver} AND ${fltr} AND ${Exclude_Minors} AND ${Exclude_Defaults}`
   const top = `&$top=5000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -140,3 +141,17 @@ async function request(table: string, param: Parameter) {
   }
 }
 //: --------------------------------------------------------
+
+const Show = {
+  Contact_ID: `Participant_ID_Table_Contact_ID_Table.Contact_ID`,
+  ID_Card: `Participant_ID_Table_Contact_ID_Table.ID_Card`,
+  Display_Name: `Participant_ID_Table_Contact_ID_Table.Display_Name`,
+  First_Name: `Participant_ID_Table_Contact_ID_Table.First_Name`,
+  Last_Name: `Participant_ID_Table_Contact_ID_Table.Last_Name`,
+  Mobile_Phone: `Participant_ID_Table_Contact_ID_Table.Mobile_Phone`,
+  Email_Address: `Participant_ID_Table_Contact_ID_Table.Email_Address`
+}
+
+const Exclude_Minors = `NOT Participant_ID_Table_Contact_ID_Table.Household_Position_ID=2`
+const Exclude_Defaults = `NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
+const Signed_Waiver = `Group_ID=${group.waiver}`

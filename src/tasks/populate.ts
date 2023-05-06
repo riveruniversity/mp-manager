@@ -1,4 +1,4 @@
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage } from '../api'
+import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage } from '../api/api'
 
 import { Contact, CarShowContact, Attendee } from '../types'
 const contacts = require('../data/carShow.json');

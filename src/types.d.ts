@@ -26,7 +26,7 @@ export interface Attendee {
   FirstName: string;
   LastName: string;
   Email: string;
-  CellPhone: number | string;
+  CellPhone: number | string | null;
 }
 
 
