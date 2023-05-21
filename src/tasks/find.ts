@@ -1,8 +1,8 @@
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage, getContact } from '../api/api'
+import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage, getContact } from '../api/mp'
 import * as fs from 'fs'
 
 import { people } from '../data/eventbrite'
-import { sleep } from '../util';
+import { sleep } from '../utils';
 
 
 
