@@ -96,7 +96,7 @@ export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
   const table = `Event_Participants`
   const select = `$select=${Field.Contact_ID}, ${Field.Household_Position_ID}`
   const filter = `&$filter=Event_ID=${eid} AND ${Signed_Waiver} AND Attending_Online='false'`
-  const top = `&$top=6000`
+  const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
 }
@@ -107,7 +107,7 @@ export function getFormResponses(eid: number): Promise<EventContact[]> {
   const table = `Form_Responses`
   const select = `$select=Form_Responses.Contact_ID, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name, Form_Responses.Phone_Number, Form_Responses.Email_Address`
   const filter = `&$filter=Event_ID=${eid}` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'
-  const top = `&$top=6000`
+  const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
 }

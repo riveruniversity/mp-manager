@@ -8,12 +8,12 @@ import { updateCardIds } from '../api/lib';
 
 
 
-// Form Responses contains needed info but does not contain Attending_Online field
+// Form Responses needed info but does not contain Attending_Online field
 // so we need to get all local attendees from EventParticipants and merge them with the info from FormResponses
 createEventParticipants()
 
 async function createEventParticipants() {
-  const eventId = 68675;
+  const eventId = 69260;
   const localParticipants: EventParticipant[] = await getEventParticipants(eventId)
   const formResponses: EventContact[] = await getFormResponses(eventId)
   const eventParticipants: EventContact[] = join(localParticipants, formResponses)
@@ -23,15 +23,7 @@ async function createEventParticipants() {
 
   fs.writeFileSync('src/data/eventParticipants.json', JSON.stringify(contacts, null, '\t'));
 
-  updateCardId(contacts)
-}
-
-function updateCardId(contacts: EventContact[]) {
-
-  contacts = contacts.filter(c => c.ID_Card === null)
-  console.log(contacts.length, 'contacts without Card_ID')
-  
-  updateCardIds(contacts, 'C')
+  updateCardIds(contacts, {prefix: 'C', onlyBlanks: true})
 }
 
 
