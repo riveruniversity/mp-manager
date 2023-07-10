@@ -3,9 +3,7 @@ import * as fs from 'fs'
 import { getEventParticipants, getFormResponses, getRiverStaff, getSignedWaiver, putCardId } from '../api/mp'
 import { EventContact, EventParticipant, GroupContact } from '../types/MP';
 import { groupBy, join } from '../utils';
-import { updateCardIds } from '../api/lib';
-
-
+import { Lib } from '../api/lib';
 
 
 // Form Responses needed info but does not contain Attending_Online field
@@ -13,17 +11,20 @@ import { updateCardIds } from '../api/lib';
 createEventParticipants()
 
 async function createEventParticipants() {
-  const eventId = 69260;
+  const eventId = 69198;
   const localParticipants: EventParticipant[] = await getEventParticipants(eventId)
   const formResponses: EventContact[] = await getFormResponses(eventId)
   const eventParticipants: EventContact[] = join(localParticipants, formResponses)
 
   var contacts = removeDuplicates(eventParticipants);
   contacts = await removeNonWaiverSigned(contacts)
+  // contacts = contacts.filter(contact => !!contact.First_Name)
 
+  fs.writeFileSync('src/data/localParticipants.json', JSON.stringify(localParticipants, null, '\t'));
+  fs.writeFileSync('src/data/formResponses.json', JSON.stringify(formResponses, null, '\t'));
   fs.writeFileSync('src/data/eventParticipants.json', JSON.stringify(contacts, null, '\t'));
 
-  updateCardIds(contacts, {prefix: 'C', onlyBlanks: true})
+  // Lib.updateCardIds(contacts, {prefix: 'C', onlyBlanks: false})
 }
 
 

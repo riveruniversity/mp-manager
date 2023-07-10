@@ -1,6 +1,6 @@
 {
   "name": "mp-manager",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "main": "build/index.js",
   "author": "Wilhelm Mauch",
   "license": "ISC",

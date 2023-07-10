@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios'
 import dotenv from 'dotenv';
+import { getAccessToken } from '../services/oauth'
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ interface Parameter {
 export function getContact(filtr: string) {
 
   const table = `Group_Participants`
-  const select = `$select=${Field.Contact_ID}, ${Field.ID_Card}, ${Field.Display_Name}, ${Field.First_Name}, ${Field.Last_Name}, ${Field.Mobile_Phone}, ${Field.Email_Address}`
+  const select = `$select=${Field.Contact_ID}, ${Field.ID_Card}, ${Field.Display_Name}, ${Field.First_Name}, ${Field.Last_Name}, ${Field.Mobile_Phone}, ${Field.Email_Address}, ${Field.Household_Position_ID}`
   const filter = `&$filter=${Signed_Waiver} AND ${filtr} AND ${Exclude_Minors} AND ${Exclude_Defaults}`
   const top = `&$top=5000`
 
@@ -94,7 +95,7 @@ export function getRiverStaff(): Promise<GroupContact[]> {
 export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
   const table = `Event_Participants`
-  const select = `$select=${Field.Contact_ID}, ${Field.Household_Position_ID}`
+  const select = `$select=${Field.Contact_ID}, ${Field.Household_Position_ID}` //, ${Field.First_Name}, ${Field.Last_Name}
   const filter = `&$filter=Event_ID=${eid} AND ${Signed_Waiver} AND Attending_Online='false'`
   const top = `&$top=10000`
 
@@ -143,7 +144,7 @@ async function request(table: string, param: Parameter) {
     method: param.method,
     url: baseUrl + param.scope + (param.select || '') + (param.filter || '') + (param.top || ''),
     headers: {
-      'Authorization': 'Bearer ' + process.env.TOKEN,
+      'Authorization': 'Bearer ' + await getAccessToken(),
       'Content-Type': 'application/json'
     },
     data: param.data,
@@ -166,12 +167,13 @@ async function request(table: string, param: Parameter) {
 }
 //: --------------------------------------------------------
 
-const Field = {
+export const Field = {
   Contact_ID: `Participant_ID_Table_Contact_ID_Table.Contact_ID`,
   ID_Card: `Participant_ID_Table_Contact_ID_Table.ID_Card`,
-  Display_Name: `Participant_ID_Table_Contact_ID_Table.Display_Name`,
   First_Name: `Participant_ID_Table_Contact_ID_Table.First_Name`,
   Last_Name: `Participant_ID_Table_Contact_ID_Table.Last_Name`,
+  Display_Name: `Participant_ID_Table_Contact_ID_Table.Display_Name`,
+  Nickname: `Participant_ID_Table_Contact_ID_Table.Nickname`,
   Mobile_Phone: `Participant_ID_Table_Contact_ID_Table.Mobile_Phone`,
   Email_Address: `Participant_ID_Table_Contact_ID_Table.Email_Address`,
   Image: `Participant_ID_Table_Contact_ID_Table.dp_fileUniqueId Image`,
