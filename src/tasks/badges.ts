@@ -7,8 +7,6 @@ import { groupBy } from '../utils'
 const staffGroupIds: number[] = [490, 491, 363]
 
 
-
-
 async function getAllRiverMembersInfo() {
 
   const contacts = await getAllRiverMembers();
@@ -23,6 +21,7 @@ async function getAllRiverMembersInfo() {
 
   console.log(`cleanMembersArr: ${cleanMembersArr.length} contacts`)
   console.log(`membersWithPic: ${membersWithPic.length} contacts`)
+  return 
   membersWithPic.forEach((contact: GroupContact, i: number) => getImage(String(contact.Image)).then((blob: Buffer) => fs.writeFileSync('./src/img/'+ contact.Contact_ID +'.jpeg', blob)))
   // fs.writeFileSync('./src/img/'+ contact.Contact_ID +'.jpeg', blob)
   // fs.writeFileSync('./src/cleanMembers.json', JSON.stringify(cleanMembersArr, null, '\t'));

@@ -43,6 +43,7 @@ export interface CarShowContact {
 
 export interface EventParticipant {
   Contact_ID: number;
+  Group_ID: number | null;
   Household_Position_ID: number;
 }
 
@@ -54,4 +55,5 @@ export interface EventContact {
   Phone_Number: string | null;
   Email_Address: string | null;
   Household_Position_ID: number;
+  Group_ID: number | null;
 }

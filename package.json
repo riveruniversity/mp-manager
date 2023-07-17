@@ -9,6 +9,7 @@
   "scripts": {
     "start": "nodemon",
     "dev": "npx nodemon src/index.ts",
+    "badge": "npx nodemon src/tasks/badges.ts --ext ts",
     "find": "npx nodemon src/tasks/find.ts  --ext ts",
     "event": "npx nodemon src/tasks/event.ts  --ext ts",
     "populate": "npx nodemon src/tasks/populate.ts  --ext ts"

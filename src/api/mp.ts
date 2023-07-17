@@ -91,12 +91,24 @@ export function getRiverStaff(): Promise<GroupContact[]> {
 //: --------------------------------------------------------
 
 
+export function getPreregisteredGroups() {
+
+  const table = `Group_Participants`
+  const select = `$select=Group_Participants.Group_ID, ${Field.Contact_ID}, ${Field.Display_Name}`
+  const filter = `&$filter=Group_Participants.Group_ID=542 AND ${Exclude_Trespassed} AND ${Exclude_Defaults}`
+  const top = `&$top=100000`
+
+  return request(table, { method: 'get', select, filter, top })
+}
+//: --------------------------------------------------------
+
+
 
 export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
   const table = `Event_Participants`
-  const select = `$select=${Field.Contact_ID}, ${Field.Household_Position_ID}` //, ${Field.First_Name}, ${Field.Last_Name}
-  const filter = `&$filter=Event_ID=${eid} AND ${Signed_Waiver} AND Attending_Online='false'`
+  const select = `$select=${Field.Contact_ID}, Event_Participants.Group_ID, ${Field.Household_Position_ID}` //, ${Field.First_Name}, ${Field.Last_Name}
+  const filter = `&$filter=Event_ID=${eid} AND Attending_Online='false'` // AND ${Signed_Waiver}
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -106,7 +118,7 @@ export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 export function getFormResponses(eid: number): Promise<EventContact[]> {
 
   const table = `Form_Responses`
-  const select = `$select=Form_Responses.Contact_ID, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name, Form_Responses.Phone_Number, Form_Responses.Email_Address`
+  const select = `$select=Form_Responses.Contact_ID, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name, Contact_ID_Table.Mobile_Phone, Contact_ID_Table.Email_Address`
   const filter = `&$filter=Event_ID=${eid}` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'
   const top = `&$top=10000`
 
