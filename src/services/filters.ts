@@ -47,3 +47,11 @@ export async function removeDuplicates(contacts: EventContact[]): Promise<EventC
   console.log(contacts.length, 'without duplicates')
   return contacts
 }
+
+
+export async function removeOnline(contacts: EventContact[]): Promise<EventContact[]> {
+  console.log(contacts.length, 'with online viewers')
+  contacts = contacts.filter(contact => !contact.Attending_Online)
+  console.log(contacts.length, 'without online viewers')
+  return contacts;
+}

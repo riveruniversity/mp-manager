@@ -107,8 +107,8 @@ export function getPreregisteredGroups() {
 export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
   const table = `Event_Participants`
-  const select = `$select=${Field.Contact_ID}, Event_Participants.Group_ID, ${Field.Household_Position_ID}` //, ${Field.First_Name}, ${Field.Last_Name}
-  const filter = `&$filter=Event_ID=${eid} AND Attending_Online='false'` // AND ${Signed_Waiver}
+  const select = `$select=${Field.Contact_ID}, Event_Participants.Group_ID, ${Field.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
+  const filter = `&$filter=Event_ID=${eid}` // AND ${Signed_Waiver}  AND Attending_Online='false'
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
