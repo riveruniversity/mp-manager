@@ -4,13 +4,15 @@ export const group = {
   contractor: 491,
   intern: 363,
   waiver: 500,
+  waiver2023: 530,
   tres: 527
 }
 
 export const event = {
-  carShow: 68675,
+  carShow: 69198,
   youthWeek: 69200,
-  fireConf: 69201
+  fireConf: 69201,
+  thatsIt: 69349
 }
 
 export const youthWeek = {

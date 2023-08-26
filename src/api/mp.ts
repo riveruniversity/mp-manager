@@ -22,8 +22,20 @@ interface Parameter {
 
 export function getContact(filtr: string) {
 
+  const table = `Contacts`
+  const select = `$select=Contacts.Contact_ID, Contacts.ID_Card, Contacts.First_Name, Contacts.Last_Name, Contacts.Display_Name, Contacts.Nickname, Contacts.Email_Address, Contacts.Mobile_Phone, Gender_ID_Table.Gender, Participant_Record_Table.Member_Status_ID, Participant_Record_Table_Member_Status_ID_Table.Member_Status, Contacts.Household_ID, Household_ID_Table.Household_Name, Contacts.Household_Position_ID, Household_Position_ID_Table.Household_Position, Contacts.Marital_Status_ID, Marital_Status_ID_Table.Marital_Status, Participant_Record_Table.Participant_ID, Participant_Record_Table.Participant_Type_ID, Participant_Record_Table.Participant_Engagement_ID, Participant_Record_Table_Participant_Engagement_ID_Table.Engagement_Level, Contact_Status_ID_Table.Contact_Status, Participant_Record_Table.Notes, Participant_Record_Table.Red_Flag_Notes, dp_fileUniqueId as Image`
+  const filter = `&$filter=${filtr}`
+  const top = `&$top=5000`
+
+  return request(table, { method: 'get', select, filter, top })
+}
+//: --------------------------------------------------------
+
+
+export function getContactSignedWaiver(filtr: string) {
+
   const table = `Group_Participants`
-  const select = `$select=${Field.Contact_ID}, ${Field.ID_Card}, ${Field.Display_Name}, ${Field.First_Name}, ${Field.Last_Name}, ${Field.Mobile_Phone}, ${Field.Email_Address}, ${Field.Household_Position_ID}`
+  const select = `$select=${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}, ${P.First_Name}, ${P.Last_Name}, ${P.Nickname}, ${P.Mobile_Phone}, ${P.Email_Address}, ${P.Household_Position_ID}`
   const filter = `&$filter=${Signed_Waiver} AND ${filtr} AND ${Exclude_Minors} AND ${Exclude_Defaults}`
   const top = `&$top=5000`
 
@@ -35,8 +47,8 @@ export function getContact(filtr: string) {
 export function getBlankCardIds() {
 
   const table = `Group_Participants`
-  const select = `$select=${Field.Contact_ID}, ${Field.ID_Card}, ${Field.Display_Name}e`
-  const filter = `&$filter=Group_ID=${group.waiver} AND ${Field.ID_Card} IS null AND ${Exclude_Defaults}`
+  const select = `$select=${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}e`
+  const filter = `&$filter=Group_ID=${group.waiver} AND ${P.ID_Card} IS null AND ${Exclude_Defaults}`
   const top = `&$top=5000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -46,7 +58,7 @@ export function getBlankCardIds() {
 export function getAllRiverMembers() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${Field.Contact_ID}, ${Field.ID_Card}, ${Field.First_Name}, ${Field.Last_Name}, ${Field.Mobile_Phone}, ${Field.Image}`
+  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.ID_Card}, ${P.First_Name}, ${P.Last_Name}, ${P.Mobile_Phone}, ${P.Image}`
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults} AND Participant_ID_Table.Participant_Engagement_ID=1` // AND Not ${Field.ID_Card} Like 'M-%'
   const top = `&$top=10000`
 
@@ -58,7 +70,7 @@ export function getAllRiverMembers() {
 export function getRiverMembers() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${Field.Contact_ID}, ${Field.ID_Card}, ${Field.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}`
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults}` // AND ${Field.Contact_ID}=126634
   const top = `&$top=10000`
 
@@ -70,7 +82,7 @@ export function getRiverMembers() {
 export function getSignedWaiver() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${Field.Contact_ID}, ${Field.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.Display_Name}`
   const filter = `&$filter=${Signed_Waiver} AND ${Exclude_Trespassed} AND ${Exclude_Defaults}` // AND ${Field.Contact_ID}=126634
   const top = `&$top=100000`
 
@@ -82,7 +94,7 @@ export function getSignedWaiver() {
 export function getRiverStaff(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${Field.Contact_ID}, ${Field.ID_Card}, ${Field.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}`
   const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff},${group.intern},${group.contractor})`
   const top = `&$top=1000`
 
@@ -94,7 +106,7 @@ export function getRiverStaff(): Promise<GroupContact[]> {
 export function getPreregisteredGroups() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${Field.Contact_ID}, ${Field.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.Display_Name}`
   const filter = `&$filter=Group_Participants.Group_ID=542 AND ${Exclude_Trespassed} AND ${Exclude_Defaults}`
   const top = `&$top=100000`
 
@@ -107,7 +119,7 @@ export function getPreregisteredGroups() {
 export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
   const table = `Event_Participants`
-  const select = `$select=${Field.Contact_ID}, Event_Participants.Group_ID, ${Field.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
+  const select = `$select=${P.Contact_ID}, Event_Participants.Group_ID, ${P.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
   const filter = `&$filter=Event_ID=${eid}` // AND ${Signed_Waiver}  AND Attending_Online='false'
   const top = `&$top=10000`
 
@@ -119,7 +131,7 @@ export function getFormResponses(eid: number): Promise<EventContact[]> {
 
   const table = `Form_Responses`
   const select = `$select=Form_Responses.Contact_ID, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name, Contact_ID_Table.Mobile_Phone, Contact_ID_Table.Email_Address`
-  const filter = `&$filter=Event_ID=${eid}` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'
+  const filter = `&$filter=Event_ID=${eid} AND Response_Date BETWEEN '08/01/2023' AND '08/31/2023'` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -152,11 +164,19 @@ async function request(table: string, param: Parameter) {
   const baseUrl = `https://mp.revival.com/ministryplatformapi`
   param.scope = param.scope ? `/${param.scope}/` : `/tables/${table}?`
 
+  let token;
+  try {
+    token = await getAccessToken();
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+
   var config: AxiosRequestConfig = {
     method: param.method,
     url: baseUrl + param.scope + (param.select || '') + (param.filter || '') + (param.top || ''),
     headers: {
-      'Authorization': 'Bearer ' + await getAccessToken(),
+      'Authorization': 'Bearer ' + token,
       'Content-Type': 'application/json'
     },
     data: param.data,
@@ -179,7 +199,7 @@ async function request(table: string, param: Parameter) {
 }
 //: --------------------------------------------------------
 
-export const Field = {
+export const P = {
   Contact_ID: `Participant_ID_Table_Contact_ID_Table.Contact_ID`,
   ID_Card: `Participant_ID_Table_Contact_ID_Table.ID_Card`,
   First_Name: `Participant_ID_Table_Contact_ID_Table.First_Name`,
@@ -195,4 +215,4 @@ export const Field = {
 const Exclude_Minors = `NOT Participant_ID_Table_Contact_ID_Table.Household_Position_ID=2`
 const Exclude_Defaults = `NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
 const Exclude_Trespassed = `NOT Group_ID=${group.tres}`
-const Signed_Waiver = `Group_ID=${group.waiver}`
+const Signed_Waiver = `Group_ID IN (${group.waiver}, ${group.waiver2023})`

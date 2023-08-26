@@ -1,3 +1,31 @@
+export interface Contact {
+  Contact_ID: number;
+  ID_Card: string;
+  First_Name: string;
+  Last_Name: string;
+  Display_Name: string;
+  Nickname: string;
+  Mobile_Phone: string;
+  Email_Address: string;
+  Gender?: any;
+  Member_Status_ID?: any;
+  Member_Status?: any;
+  Household_ID: number;
+  Household_Name: string;
+  Household_Position_ID: number;
+  Household_Position: string;
+  Marital_Status_ID?: any;
+  Marital_Status?: any;
+  Participant_ID: number;
+  Participant_Type_ID: number;
+  Participant_Engagement_ID: number;
+  Engagement_Level: string;
+  Contact_Status: string;
+  Notes: string;
+  Red_Flag_Notes?: any;
+  Image?: any;
+}
+
 export interface GroupContact {
   Group_ID: number;
   Contact_ID: number;
@@ -37,7 +65,10 @@ export interface CarShowContact {
   Display_Name: string;
   First_Name: string;
   Last_Name: string;
+  Nickname: string;
   Mobile_Phone: string | null;
+  Email_Address: string;
+  Household_Position_ID: number;
 }
 
 

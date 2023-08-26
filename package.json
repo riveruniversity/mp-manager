@@ -1,6 +1,6 @@
 {
   "name": "mp-manager",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "build/index.js",
   "author": "Wilhelm Mauch",
   "license": "ISC",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^18.11.2",
     "nodemon": "^2.0.22",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }

@@ -13,7 +13,7 @@ export function noStaff(contacts: GroupContact[]) {
 export async function removeStaff(contacts: EventContact[]): Promise<EventContact[]> {
   const staff: GroupContact[] = await getRiverStaff();
   contacts = contacts.filter(contact => !staff.find(staff => staff.Contact_ID === contact.Contact_ID))
-  console.log(contacts.length, 'without staff')
+  console.log(contacts.length, 'excluding staff')
   return contacts
 }
 
@@ -28,30 +28,30 @@ export async function removeNonWaiverSigned(contacts: EventContact[]): Promise<E
 export async function removeGroupRegistrations(contacts: EventContact[]): Promise<EventContact[]> {
   const groups: GroupContact[] = await getPreregisteredGroups();
   contacts = contacts.filter(contact => !groups.find(g => g.Contact_ID === contact.Contact_ID))
-  console.log(contacts.length, 'without group registrations')
+  console.log(contacts.length, 'excluding group registrations')
   return contacts;
 }
 
 
 export async function removeAdults(contacts: EventContact[]): Promise<EventContact[]> {
   contacts = contacts.filter(contact => contact.Group_ID !== youthWeek.adult)
-  console.log(contacts.length, 'without group registrations')
+  console.log(contacts.length, 'excluding group registrations')
   return contacts;
 }
 
 
 export async function removeDuplicates(contacts: EventContact[]): Promise<EventContact[]> {
-  console.log(contacts.length, 'with duplicates')
+  // console.log(contacts.length, 'with duplicates')
   const groupedContacts = groupBy(contacts, 'Contact_ID')
   contacts = groupedContacts.map((contact: EventContact[]) => contact[0])
-  console.log(contacts.length, 'without duplicates')
+  console.log(contacts.length, 'excluding duplicates')
   return contacts
 }
 
 
 export async function removeOnline(contacts: EventContact[]): Promise<EventContact[]> {
-  console.log(contacts.length, 'with online viewers')
+  // console.log(contacts.length, 'with online viewers')
   contacts = contacts.filter(contact => !contact.Attending_Online)
-  console.log(contacts.length, 'without online viewers')
+  console.log(contacts.length, 'excluding online viewers')
   return contacts;
 }
