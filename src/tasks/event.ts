@@ -29,5 +29,5 @@ const eventId = event.mensConf;
   // fs.writeFileSync('src/data/localParticipants.json', JSON.stringify(localParticipants, null, '\t'));
   fs.writeFileSync('src/data/eventParticipants.json', JSON.stringify(eventParticipants, null, '\t'));
 
-  // Lib.updateCardIds(formResponses, {prefix: 'C', onlyBlanks: true});
+  Lib.updateCardIds(formResponses, {prefix: 'C', onlyBlanks: true});
 })()
