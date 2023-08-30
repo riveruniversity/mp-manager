@@ -32,7 +32,7 @@ export function join(arr1: any[], arr2: any[]) {
 }
 
 export function joinParticipantInfo(eventParticipants: any[], formResponses: any[]) {
-  return formResponses.map(response => ({...response, ...eventParticipants.find(participant => participant.Contact_ID === response.Contact_ID)!}))
+  return eventParticipants.map(response => ({...response, ...formResponses.find(participant => participant.Contact_ID === response.Contact_ID)!}))
 }
 
 export function filterByName(response: CarShowContact[], person: Attendee) {

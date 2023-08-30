@@ -7,7 +7,8 @@ import { join, joinParticipantInfo } from '../utils';
 import { event } from '../config/vars'
 import { Lib } from '../api/lib';
 
-const eventId = event.carShow;
+// >>> Settings
+const eventId = event.mensConf;
 
 // Form Responses needed info but does not contain Attending_Online field
 // so we need to get all local attendees from EventParticipants and merge them with the info from FormResponses
@@ -18,7 +19,7 @@ const eventId = event.carShow;
   var formResponses: EventContact[] = await getFormResponses(eventId);
   console.log(formResponses.length, 'form responses')
   // eventParticipants = join(eventParticipants, formResponses) as EventContact[];
-  eventParticipants = joinParticipantInfo(eventParticipants, formResponses) as EventContact[];
+  eventParticipants = joinParticipantInfo(formResponses, eventParticipants) as EventContact[];
   eventParticipants = await removeOnline(eventParticipants);
   eventParticipants = await removeDuplicates(eventParticipants);
   eventParticipants = await removeStaff(eventParticipants);
@@ -28,5 +29,5 @@ const eventId = event.carShow;
   // fs.writeFileSync('src/data/localParticipants.json', JSON.stringify(localParticipants, null, '\t'));
   fs.writeFileSync('src/data/eventParticipants.json', JSON.stringify(eventParticipants, null, '\t'));
 
-  Lib.updateCardIds(formResponses, {prefix: 'C', onlyBlanks: true});
+  // Lib.updateCardIds(formResponses, {prefix: 'C', onlyBlanks: true});
 })()
