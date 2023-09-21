@@ -52,6 +52,7 @@ export interface Parameter {
 
 // 
 export interface Attendee {
+  StudentID?: number;
   FirstName: string;
   LastName: string;
   Email: string;

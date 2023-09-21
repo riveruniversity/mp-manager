@@ -1,9 +1,13 @@
 import * as fs from 'fs'
 import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage, getContact, P } from '../api/mp'
-import { people } from '../data/eventbrite'
+import { people } from '../data/attendees'
 import { filterByName, formatPhone, sleep } from '../utils';
 import { CarShowContact } from '../types/MP';
 import { Lib } from '../api/lib';
+
+
+// used to save json files
+const eventName: string = 'students';
 
 
 (async function findMPRecord() {
@@ -49,8 +53,9 @@ import { Lib } from '../api/lib';
   console.log(notFound.length + ' people not found');
   console.log(removed.length + ' people found by first name didn\'t match');
 
-  fs.writeFileSync('./src/data/carShow/carShowOnMP.json', JSON.stringify(found, null, '\t'));
-  fs.writeFileSync('./src/data/carShow/carShowNoMP.json', JSON.stringify(notFound, null, '\t'));
+  fs.writeFileSync(`./src/data/${eventName}/${eventName}OnMP.json`, JSON.stringify(found, null, '\t'));
+  fs.writeFileSync(`./src/data/${eventName}/${eventName}NoMP.json`, JSON.stringify(notFound, null, '\t'));
+  fs.writeFileSync(`./src/data/${eventName}/${eventName}removedOnMP.json`, JSON.stringify(removed, null, '\t'));
 
   Lib.updateCardIds(found, {prefix: 'C', onlyBlanks: true});
 

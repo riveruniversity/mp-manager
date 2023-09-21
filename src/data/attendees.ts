@@ -1,5 +1,4 @@
 import { Attendee } from "../types/MP";
 
 
-export const people: Attendee[] = [
-]
+export const people: Attendee[] = []

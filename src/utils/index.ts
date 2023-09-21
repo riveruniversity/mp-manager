@@ -1,4 +1,4 @@
-import { Attendee, CarShowContact, GroupContact } from "../types/MP";
+import { Attendee, CarShowContact, Contact, GroupContact } from "../types/MP";
 
 export function groupBy(array: any[], key: string) {
   const participants: any[] = [];
@@ -35,8 +35,11 @@ export function joinParticipantInfo(eventParticipants: any[], formResponses: any
   return eventParticipants.map(response => ({...response, ...formResponses.find(participant => participant.Contact_ID === response.Contact_ID)!}))
 }
 
-export function filterByName(response: CarShowContact[], person: Attendee) {
-  return response.filter(p => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase().includes(person.FirstName.toLowerCase()))
+export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {
+  const fullName = (p: Contact | CarShowContact) => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase()
+  const firstName = person.FirstName.toLowerCase().split(' ')[0]
+  const lastName  = person.LastName.toLowerCase().split(' ')[0]
+  return response.filter((p: Contact | CarShowContact) => fullName(p).includes(firstName) && fullName(p).includes(lastName)) // remove last name to get more results (but is more inaccurate)
 }
 
 
