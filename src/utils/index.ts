@@ -15,7 +15,7 @@ export function groupBy(array: any[], key: string) {
     return a;
   }, {});
 
-  for (var key in outObject) {
+  for (let key in outObject) {
     participants.push(outObject[key]);
   }
 

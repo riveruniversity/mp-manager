@@ -35,7 +35,7 @@ export function getContact(filtr: string) {
 export function getContactSignedWaiver(filtr: string) {
 
   const table = `Group_Participants`
-  const select = `$select=${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}, ${P.First_Name}, ${P.Last_Name}, ${P.Nickname}, ${P.Mobile_Phone}, ${P.Email_Address}, ${P.Household_Position_ID}`
+  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}`
   const filter = `&$filter=${Signed_Waiver} AND ${filtr} AND ${Exclude_Minors} AND ${Exclude_Defaults}`
   const top = `&$top=5000`
 
@@ -47,8 +47,8 @@ export function getContactSignedWaiver(filtr: string) {
 export function getBlankCardIds() {
 
   const table = `Group_Participants`
-  const select = `$select=${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}e`
-  const filter = `&$filter=Group_ID=${group.waiver} AND ${P.ID_Card} IS null AND ${Exclude_Defaults}`
+  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}e`
+  const filter = `&$filter=Group_ID=${group.waiver} AND ${C.ID_Card} IS null AND ${Exclude_Defaults}`
   const top = `&$top=5000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -58,7 +58,7 @@ export function getBlankCardIds() {
 export function getAllRiverMembers() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.ID_Card}, ${P.First_Name}, ${P.Last_Name}, ${P.Mobile_Phone}, ${P.Image}`
+  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Image}`
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults} AND Participant_ID_Table.Participant_Engagement_ID=1` // AND Not ${Field.ID_Card} Like 'M-%'
   const top = `&$top=10000`
 
@@ -70,7 +70,7 @@ export function getAllRiverMembers() {
 export function getRiverMembers() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}`
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults}` // AND ${Field.Contact_ID}=126634
   const top = `&$top=10000`
 
@@ -82,7 +82,7 @@ export function getRiverMembers() {
 export function getSignedWaiver() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.Display_Name}`
   const filter = `&$filter=${Signed_Waiver} AND ${Exclude_Trespassed} AND ${Exclude_Defaults}` // AND ${Field.Contact_ID}=126634
   const top = `&$top=100000`
 
@@ -94,7 +94,7 @@ export function getSignedWaiver() {
 export function getRiverStaff(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.ID_Card}, ${P.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}`
   const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff},${group.intern},${group.contractor})`
   const top = `&$top=1000`
 
@@ -106,7 +106,7 @@ export function getRiverStaff(): Promise<GroupContact[]> {
 export function getPreregisteredGroups() {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${P.Contact_ID}, ${P.Display_Name}`
+  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.Display_Name}`
   const filter = `&$filter=Group_Participants.Group_ID=542 AND ${Exclude_Trespassed} AND ${Exclude_Defaults}`
   const top = `&$top=100000`
 
@@ -116,10 +116,10 @@ export function getPreregisteredGroups() {
 
 
 
-export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
+export function getEventParticipants(eid: number): Promise<EventContact[]> {
 
   const table = `Event_Participants`
-  const select = `$select=${P.Contact_ID}, Event_Participants.Group_ID, ${P.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
+  const select = `$select=${C.Contact_ID}, Event_Participants.Group_ID, ${C.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
   const filter = `&$filter=Event_ID=${eid}` // AND ${Signed_Waiver}  AND Attending_Online='false'
   const top = `&$top=10000`
 
@@ -131,7 +131,7 @@ export function getFormResponses(eid: number): Promise<EventContact[]> {
 
   const table = `Form_Responses`
   const select = `$select=Form_Responses.Contact_ID, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name, Contact_ID_Table.Email_Address, Contact_ID_Table.Mobile_Phone`
-  const filter = `&$filter=Event_ID=${eid} AND Response_Date BETWEEN '08/01/2023' AND '08/31/2023'` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'
+  const filter = `&$filter=Event_ID=${eid} ` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'  // AND Response_Date BETWEEN '08/01/2023' AND '08/31/2023'
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -199,7 +199,7 @@ async function request(table: string, param: Parameter) {
 }
 //: --------------------------------------------------------
 
-export const P = {
+export const C = {
   Contact_ID: `Participant_ID_Table_Contact_ID_Table.Contact_ID`,
   ID_Card: `Participant_ID_Table_Contact_ID_Table.ID_Card`,
   First_Name: `Participant_ID_Table_Contact_ID_Table.First_Name`,

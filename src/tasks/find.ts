@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage, getContact, P } from '../api/mp'
+import { getContact, C } from '../api/mp'
 import { people } from '../data/attendees'
 import { filterByName, formatPhone, sleep } from '../utils';
 import { CarShowContact } from '../types/MP';
@@ -7,7 +7,7 @@ import { Lib } from '../api/lib';
 
 
 // used to save json files
-const eventName: string = 'students';
+const eventName: string = 'carShow';
 
 
 (async function findMPRecord() {

@@ -39,17 +39,6 @@ export interface GroupContact {
 }
 
 
-export interface Parameter {
-  method: 'get' | 'post' | 'put';
-  select?: string;
-  filter?: string;
-  top?: string;
-  data?: any;
-  scope?: string;
-  responseType?: ResponseType;
-}
-
-
 // 
 export interface Attendee {
   StudentID?: number;
@@ -82,10 +71,9 @@ export interface EventParticipant {
 
 export interface EventContact extends EventParticipant {
   // Form Response
-  Contact_ID: number;
   ID_Card: string | null;
   First_Name: string;
   Last_Name: string;
-  Phone_Number: string | null;
   Email_Address: string | null;
+  Phone_Number: string | null;
 }

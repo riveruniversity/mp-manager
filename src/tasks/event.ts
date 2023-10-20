@@ -8,7 +8,7 @@ import { event } from '../config/vars'
 import { Lib } from '../api/lib';
 
 // >>> Settings
-const eventId = event.mensConf;
+const eventId = event.mlcBreakthrough;
 
 // Form Responses needed info but does not contain Attending_Online field
 // so we need to get all local attendees from EventParticipants and merge them with the info from FormResponses
