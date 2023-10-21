@@ -1,14 +1,16 @@
 import { Attendee, CarShowContact, Contact, GroupContact } from "../types/MP";
 
-export function groupBy(array: any[], key: string, returnDuplicatesOnly: boolean = false) {
+export function groupBy(array: any[], groupKey: string, returnDuplicatesOnly: boolean = false) {
   const participants: any[] = [];
 
   const outObject = array.reduce(function (a, c, i) {
 
     // if no value, assign current index
-    let estKey = (c[key] || i);
+    let keyVal = (c[groupKey] || i);
+    // take only the first value if more than one word // take @ plus first 2 chars after @ when email address
+    keyVal = typeof keyVal == 'number' ? keyVal : keyVal.toLowerCase().split(' ')[0].split(/(?<=@..)/)[0];
 
-    (a[estKey] ? a[estKey] : (a[estKey] = null || [])).push(c);
+    (a[keyVal] ? a[keyVal] : (a[keyVal] = [])).push(c);
     return a;
   }, {});
 

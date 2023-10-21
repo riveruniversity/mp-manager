@@ -1,4 +1,6 @@
 import * as fs from 'fs'
+import { json2csv, Json2CsvOptions  } from 'json-2-csv';
+
 
 import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
 import { EventContact, GroupContact } from "../types/MP";
@@ -55,11 +57,12 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
     if(contacts.length === 1) acc = [...acc, ...contacts];
     else {
       const groupedByName = groupBy(contacts, "First_Name");
-      const filtered = groupedByName.reduce((accName, current) => {
+      const filtered = groupedByName.reduce((accName, current: EventContact[]) => {
         if (current.length === 1) return [...accName, ...current]
         else {
-          accName.push(current[0])
-          duplicates.push(current);
+          const select = current.find(c => !!c.Phone_Number || !!c.Email_Address)
+          if (select) accName.push(select) // don't include if no phone or email address
+          duplicates = duplicates.concat(current);
         }
         return accName;
       },[])
@@ -70,8 +73,8 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
     return acc;
   }, [])
   // fs.writeFileSync(`./src/data/eventContacts.json`, JSON.stringify(eventContacts, null, '\t'));
-  fs.writeFileSync(`./src/data/duplicates.json`, JSON.stringify(duplicates, null, '\t'));
-
+  // fs.writeFileSync(`./src/data/duplicates.json`, JSON.stringify(duplicates, null, '\t'));
+  fs.writeFileSync('src/data/duplicates.csv', await json2csv(duplicates, { emptyFieldValue: ''}));
   
   console.log(eventContacts.length, 'excluding duplicates')
   return eventContacts
