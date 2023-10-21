@@ -120,7 +120,7 @@ export function getEventParticipants(eid: number): Promise<EventContact[]> {
 
   const table = `Event_Participants`
   const select = `$select=${C.Contact_ID}, Event_Participants.Group_ID, ${C.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
-  const filter = `&$filter=Event_ID=${eid}` // AND ${Signed_Waiver}  AND Attending_Online='false'
+  const filter = `&$filter=Event_ID=${eid}` // AND ${Signed_Waiver}  AND Attending_Online='false' // AND Participant_ID_Table_Contact_ID_Table.ID_Card NOT Like 'C%'
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -131,7 +131,7 @@ export function getFormResponses(eid: number): Promise<EventContact[]> {
 
   const table = `Form_Responses`
   const select = `$select=Form_Responses.Contact_ID, Contact_ID_Table.ID_Card, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name, Contact_ID_Table.Email_Address, Contact_ID_Table.Mobile_Phone`
-  const filter = `&$filter=Event_ID=${eid} ` //AND Contact_ID_Table.ID_Card is not null AND Contact_ID_Table.ID_Card NOT Like 'C%'  // AND Response_Date BETWEEN '08/01/2023' AND '08/31/2023'
+  const filter = `&$filter=Event_ID=${eid} ` //AND Contact_ID_Table.ID_Card is not null // AND Contact_ID_Table.ID_Card NOT Like 'C%'  // AND Response_Date BETWEEN '08/01/2023' AND '08/31/2023'
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })

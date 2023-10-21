@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { json2csv, Json2CsvOptions  } from 'json-2-csv';
 
 import { getEventParticipants, getFormResponses } from '../api/mp'
 import { removeDuplicates, removeGroupRegistrations, removeOnline, removeStaff } from '../services/filters';
@@ -24,10 +25,10 @@ const eventId = event.mlcBreakthrough;
   eventParticipants = await removeDuplicates(eventParticipants);
   eventParticipants = await removeStaff(eventParticipants);
   // contacts = await removeNonWaiverSigned(contacts)
-  // contacts = contacts.filter(contact => !!contact.First_Name) // Checked in but didn't submit form.
+  // contacts = contacts.filter(contact => !!contact.First_Name) // Checked in locally but didn't submit form.
 
   // fs.writeFileSync('src/data/localParticipants.json', JSON.stringify(localParticipants, null, '\t'));
-  fs.writeFileSync('src/data/eventParticipants.json', JSON.stringify(eventParticipants, null, '\t'));
+  fs.writeFileSync('src/data/eventParticipants.csv', await json2csv(eventParticipants, { emptyFieldValue: ''}));
 
   Lib.updateCardIds(formResponses, {prefix: 'C', onlyBlanks: true});
 })()

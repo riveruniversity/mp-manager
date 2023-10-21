@@ -1,3 +1,5 @@
+import * as fs from 'fs'
+
 import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
 import { EventContact, GroupContact } from "../types/MP";
 import { group, youthWeek } from '../config/vars'
@@ -40,12 +42,39 @@ export async function removeAdults(contacts: EventContact[]): Promise<EventConta
 }
 
 
-export async function removeDuplicates(contacts: EventContact[]): Promise<EventContact[]> {
+// Remove duplicates where first name, email (and phone) are the same
+export async function removeDuplicates(eventContacts: EventContact[]): Promise<EventContact[]> {
   // console.log(contacts.length, 'with duplicates')
-  const groupedContacts = groupBy(contacts, 'Contact_ID')
-  contacts = groupedContacts.map((contact: EventContact[]) => contact[0])
-  console.log(contacts.length, 'excluding duplicates')
-  return contacts
+  let duplicates: EventContact[] = [];
+  let groupedContacts = groupBy(eventContacts, 'Contact_ID');
+  eventContacts = groupedContacts.map((contacts: EventContact[]) => contacts[0])
+
+  groupedContacts = groupBy(eventContacts, 'Email_Address');
+  eventContacts = groupedContacts.reduce((acc, contacts: EventContact[], i) => {
+
+    if(contacts.length === 1) acc = [...acc, ...contacts];
+    else {
+      const groupedByName = groupBy(contacts, "First_Name");
+      const filtered = groupedByName.reduce((accName, current) => {
+        if (current.length === 1) return [...accName, ...current]
+        else {
+          accName.push(current[0])
+          duplicates.push(current);
+        }
+        return accName;
+      },[])
+
+      acc = [...acc, ...filtered]
+    }
+
+    return acc;
+  }, [])
+  // fs.writeFileSync(`./src/data/eventContacts.json`, JSON.stringify(eventContacts, null, '\t'));
+  fs.writeFileSync(`./src/data/duplicates.json`, JSON.stringify(duplicates, null, '\t'));
+
+  
+  console.log(eventContacts.length, 'excluding duplicates')
+  return eventContacts
 }
 
 
