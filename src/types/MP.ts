@@ -69,11 +69,16 @@ export interface EventParticipant {
   Attending_Online: boolean;
 }
 
-export interface EventContact extends EventParticipant {
+export interface EventFormsResponse {
   // Form Response
   ID_Card: string | null;
   First_Name: string;
   Last_Name: string;
   Email_Address: string | null;
+  Mobile_Phone: string | null;
   Phone_Number: string | null;
+}
+
+export interface EventContact extends EventParticipant, EventFormsResponse {
+
 }

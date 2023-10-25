@@ -3,10 +3,11 @@ import { json2csv, Json2CsvOptions  } from 'json-2-csv';
 
 import { getEventParticipants, getFormResponses } from '../api/mp'
 import { removeDuplicates, removeGroupRegistrations, removeOnline, removeStaff } from '../services/filters';
-import { EventContact, EventParticipant } from '../types/MP';
+import { EventContact, EventFormsResponse, EventParticipant } from '../types/MP';
 import { join, joinParticipantInfo } from '../utils';
 import { event } from '../config/vars'
 import { Lib } from '../api/lib';
+import { findDuplicates, insertValues } from '../services/sql';
 
 // >>> Settings
 const eventId = event.mlcBreakthrough;
@@ -16,19 +17,27 @@ const eventId = event.mlcBreakthrough;
 
 (async function createEventParticipants() {
   
-  var eventParticipants: EventContact[]  = await getEventParticipants(eventId) as EventContact[];  //| EventParticipant[]
-  var formResponses: EventContact[] = await getFormResponses(eventId);
-  console.log(formResponses.length, 'form responses')
-  // eventParticipants = join(eventParticipants, formResponses) as EventContact[];
-  eventParticipants = joinParticipantInfo(formResponses, eventParticipants) as EventContact[];
-  eventParticipants = await removeOnline(eventParticipants);
-  eventParticipants = await removeDuplicates(eventParticipants);
-  eventParticipants = await removeStaff(eventParticipants);
-  // contacts = await removeNonWaiverSigned(contacts)
-  // contacts = contacts.filter(contact => !!contact.First_Name) // Checked in locally but didn't submit form.
+  let eventParticipants: EventParticipant[]  = await getEventParticipants(eventId); 
+  let formResponses: EventFormsResponse[] = await getFormResponses(eventId);
+  console.log(eventParticipants.length, 'event participants')
+  console.log(formResponses.length, 'event form responses')
 
-  // fs.writeFileSync('src/data/localParticipants.json', JSON.stringify(localParticipants, null, '\t'));
-  fs.writeFileSync('src/data/eventParticipants.csv', await json2csv(eventParticipants, { emptyFieldValue: ''}));
+  // eventContacts = join(eventParticipants, formResponses) as EventContact[];
+  let eventContacts: EventContact[] = joinParticipantInfo(formResponses, eventParticipants);
+  eventContacts = await removeOnline(eventContacts);
+  eventContacts = await removeDuplicates(eventContacts);
+  eventContacts = await removeStaff(eventContacts);
 
-  Lib.updateCardIds(formResponses, {prefix: 'C', onlyBlanks: true});
+  // only form responses are included, therefore all contacts signed the waiver
+  // - eventContacts = await removeNonWaiverSigned(contacts)
+  // - eventContacts = contacts.filter(contact => !!contact.First_Name) // Checked in locally but didn't submit form.
+
+  fs.writeFileSync('src/data/eventContacts.csv', await json2csv(eventContacts, { emptyFieldValue: ''}));
+  // - fs.writeFileSync('src/data/eventContacts.json', JSON.stringify(eventContacts, null, '\t'));
+
+  // used to cross-check duplicates with SQL queries 
+  //- -insertValues(eventContacts);
+  //- -findDuplicates();
+
+  Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});
 })()

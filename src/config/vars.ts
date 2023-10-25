@@ -5,7 +5,7 @@ export const group = {
   intern: 363,
   waiver: 500,
   waiver2023: 530,
-  tres: 527
+  trespassed: 527
 }
 
 export const event = {

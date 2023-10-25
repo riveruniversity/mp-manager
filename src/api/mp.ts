@@ -116,7 +116,7 @@ export function getPreregisteredGroups() {
 
 
 
-export function getEventParticipants(eid: number): Promise<EventContact[]> {
+export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
   const table = `Event_Participants`
   const select = `$select=${C.Contact_ID}, Event_Participants.Group_ID, ${C.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
@@ -214,5 +214,5 @@ export const C = {
 
 const Exclude_Minors = `NOT Participant_ID_Table_Contact_ID_Table.Household_Position_ID=2`
 const Exclude_Defaults = `NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`
-const Exclude_Trespassed = `NOT Group_ID=${group.tres}`
+const Exclude_Trespassed = `NOT Group_ID=${group.trespassed}`
 const Signed_Waiver = `Group_ID IN (${group.waiver}, ${group.waiver2023})`
