@@ -1,4 +1,4 @@
-import { Attendee, CarShowContact, Contact, GroupContact, EventContact } from "../types/MP";
+import { Attendee, CarShowContact, Contact, GroupContact, EventContact, EventParticipant, EventFormResponse } from "../types/MP";
 
 export function groupBy<T>(array: T[], groupKey: keyof T)  {
 
@@ -43,8 +43,8 @@ export function join(arr1: any[], arr2: any[]) {
   return arr1.map(participant => ({ ...participant, ...arr2.find(response => response.Contact_ID === participant.Contact_ID)! }))
 }
 
-export function joinParticipantInfo(eventParticipants: any[], formResponses: any[]): EventContact[] {
-  return eventParticipants.map(response => ({ ...response, ...formResponses.find(participant => participant.Contact_ID === response.Contact_ID)! }))
+export function joinParticipantInfo(formResponses: EventFormResponse[], eventParticipants: EventParticipant[]): EventContact[] {
+  return formResponses.map(response => ({ ...response, ...eventParticipants.find(participant => participant.Contact_ID === response.Contact_ID)! }))
 }
 
 export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {

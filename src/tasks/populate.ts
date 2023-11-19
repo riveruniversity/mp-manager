@@ -1,5 +1,5 @@
 import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, getImage } from '../api/mp'
-import { event } from '../config/vars'
+import { events } from '../config/vars'
 import { Lib } from '../api/lib';
 
 // import { Contact, CarShowContact, Attendee } from '../types/MP'
@@ -9,7 +9,7 @@ import { Lib } from '../api/lib';
 populateCardId()
 
 async function populateCardId() {
-  const eventId = event.youthWeek
+  const eventId = events.youthWeek
   // const contacts = await getBlankCardIds();
   // const contacts = await getFormResponses(eventId);
   // const contacts = await getRiverMembers();

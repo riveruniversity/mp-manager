@@ -67,18 +67,19 @@ export interface EventParticipant {
   Group_ID: number | null;
   Household_Position_ID: number;
   Attending_Online: boolean;
+  // Phone_Number: string;
 }
 
-export interface EventFormsResponse {
+export interface EventFormResponse {
   // Form Response
+  Contact_ID: number;
   ID_Card: string | null;
   First_Name: string;
   Last_Name: string;
   Email_Address: string | null;
   Mobile_Phone: string | null;
-  Phone_Number: string | null;
 }
 
-export interface EventContact extends EventParticipant, EventFormsResponse {
+export interface EventContact extends EventParticipant, EventFormResponse {
 
 }

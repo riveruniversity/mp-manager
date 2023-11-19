@@ -8,13 +8,14 @@ export const group = {
   trespassed: 527
 }
 
-export const event = {
+export const events = {
   carShow: 69198,
   youthWeek: 69200,
   fireConf: 69201,
   thatsIt: 69349,
   mensConf: 68412,
-  mlcBreakthrough: 69035
+  mlcBreakthrough: 69035,
+  turkeyFest: 69603
 }
 
 export const youthWeek = {

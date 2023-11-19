@@ -1,4 +1,6 @@
 import * as fs from 'fs'
+import { json2csv, Json2CsvOptions  } from 'json-2-csv';
+
 import { getContact, C } from '../api/mp'
 import { people } from '../data/attendees'
 import { filterByName, formatPhone, sleep } from '../utils';
@@ -27,23 +29,23 @@ const eventName: string = 'carShow';
     }
 
     if (res?.length) {
-      console.log(person.CellPhone + ': found by phone ✅', res.length);
+      console.log(person.CellPhone || person.FirstName, ': found by phone ✅', res.length);
     } else if (person.Email) {
       res = await getContact(`Contacts.Email_Address='${person.Email}'`);
       if (res?.length) {
-        console.log(person.CellPhone + ': found by email ✅', res.length)
+        console.log(person.CellPhone || person.FirstName, ': found by email ✅', res.length)
       }
     }
 
     if (res?.length) {
       const filtered = filterByName(res, person)
       if (filtered.length)
-        found = found.concat(filtered)
+        found = found.concat({...filtered[0],...person})
       else 
         removed = removed.concat(res)
     } else {
       notFound = notFound.concat(person)
-      console.log(person.CellPhone + ': not found ❌')
+      console.log(person.CellPhone || person.FirstName, ': not found ❌')
     }
   }
 
@@ -56,6 +58,9 @@ const eventName: string = 'carShow';
   fs.writeFileSync(`./src/data/${eventName}/${eventName}OnMP.json`, JSON.stringify(found, null, '\t'));
   fs.writeFileSync(`./src/data/${eventName}/${eventName}NoMP.json`, JSON.stringify(notFound, null, '\t'));
   fs.writeFileSync(`./src/data/${eventName}/${eventName}removedOnMP.json`, JSON.stringify(removed, null, '\t'));
+
+  fs.writeFileSync(`src/data/${eventName}/${eventName}OnMP.csv`, await json2csv(found, { emptyFieldValue: ''}));
+
 
   Lib.updateCardIds(found, {prefix: 'C', onlyBlanks: true});
 

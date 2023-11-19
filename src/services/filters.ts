@@ -1,12 +1,10 @@
 import * as fs from 'fs'
-import { json2csv, Json2CsvOptions  } from 'json-2-csv';
-
+import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
 import { EventContact, GroupContact } from "../types/MP";
 import { group, youthWeek } from '../config/vars'
 import { groupArrayBy } from "../utils";
-
 
 
 export function noStaff(contacts: GroupContact[]) {
@@ -57,7 +55,7 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
   groupedContacts = groupArrayBy<EventContact>(eventContacts, 'Email_Address');
   eventContacts = groupedContacts.reduce((acc, contacts: EventContact[], i) => {
 
-    if(contacts.length === 1) acc = [...acc, ...contacts];
+    if (contacts.length === 1) acc = [...acc, ...contacts];
     else {
       const groupedByName = groupArrayBy<EventContact>(contacts, "First_Name");
       const filtered = groupedByName.reduce((accName, current: EventContact[]) => {
@@ -65,12 +63,12 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
         else {
           // console.log('groupedByName', current)
 
-          const select = current.find(c => !!c.Phone_Number || !!c.Email_Address)
+          const select = current.find(c => !!c.Mobile_Phone || !!c.Email_Address)
           if (select) accName.push(select) // don't include if no phone or email address
           duplicates = duplicates.concat(current);
         }
         return accName;
-      },[])
+      }, [])
 
       acc = [...acc, ...filtered]
     }
@@ -82,18 +80,18 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
   // remove duplicates by phone #
   groupedContacts = groupArrayBy<EventContact>(eventContacts, 'Mobile_Phone');
   eventContacts = groupedContacts.reduce((acc, contacts: EventContact[], i) => {
-    if(contacts.length === 1) acc = [...acc, ...contacts];
+    if (contacts.length === 1) acc = [...acc, ...contacts];
     else {
       const groupedByName = groupArrayBy<EventContact>(contacts, "First_Name");
       const filtered = groupedByName.reduce((accName, current: EventContact[]) => {
         if (current.length === 1) return [...accName, ...current]
         else {
-          const select = current.find(c => !!c.Phone_Number || !!c.Email_Address)
+          const select = current.find(c => !!c.Mobile_Phone || !!c.Email_Address)
           if (select) accName.push(select) // don't include if no phone or email address
           duplicates = duplicates.concat(current);
         }
         return accName;
-      },[])
+      }, [])
 
       acc = [...acc, ...filtered]
     }
@@ -103,8 +101,8 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
 
   // fs.writeFileSync(`./src/data/eventContacts.json`, JSON.stringify(eventContacts, null, '\t'));
   // fs.writeFileSync(`./src/data/duplicates.json`, JSON.stringify(duplicates, null, '\t'));
-  fs.writeFileSync('src/data/duplicates.csv', await json2csv(duplicates, { emptyFieldValue: ''}));
-  
+  fs.writeFileSync('src/data/duplicates.csv', await json2csv(duplicates, { emptyFieldValue: '' }));
+
   console.log(eventContacts.length, 'excluding duplicates')
   return eventContacts
 }
