@@ -15,7 +15,9 @@ export const events = {
   thatsIt: 69349,
   mensConf: 68412,
   mlcBreakthrough: 69035,
-  turkeyFest: 69603
+  turkeyFest: 69603,
+  christmas: 69604,
+  christmasChild: 69617
 }
 
 export const youthWeek = {

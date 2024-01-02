@@ -10,7 +10,7 @@ import { Lib } from '../api/lib';
 import { findDuplicates, insertValues } from '../services/sql';
 
 // >>> Settings
-const eventId = events.turkeyFest;
+const eventId = events.christmas;
 
 // Form Responses needed info but does not contain Attending_Online field
 // so we need to get all local attendees from EventParticipants and merge them with the info from FormResponses
