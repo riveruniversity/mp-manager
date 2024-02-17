@@ -71,13 +71,11 @@ async function contactToBulkTextFormat(attendees: CarShowContact[], fileName: st
 
   const contacts: CarShowContact[] = await removeDuplicates(attendees as unknown as EventContact[], false) as unknown as CarShowContact[];
 
-  const groupedByPhone = groupBy(contacts, 'Mobile_Phone');
-
-  console.log('groupedByPhone', groupedByPhone);
+  // const groupedByPhone = groupBy(contacts, 'Mobile_Phone');
 
   const bulkContacts = contacts.map((att, i) => ({
-    first: att.Nickname || att.First_Name, last: att.Last_Name, email: att.Email_Address,
-    phone: att.Mobile_Phone, barcode: att.ID_Card, fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
+    first: att.Nickname || att.First_Name, last: att.Last_Name, email: att.Email_Address, phone: att.Mobile_Phone, 
+    barcode: att.ID_Card, onMp: true, fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
   }))
 
   fs.writeFileSync(`src/data/${eventName}/${eventName}_${fileName}.json`, JSON.stringify(bulkContacts, null, '\t'));
@@ -88,11 +86,12 @@ async function contactToBulkTextFormat(attendees: CarShowContact[], fileName: st
 
 async function attendeeToBulkTextFormat(attendees: Attendee[], fileName: string = 'notOnMp') {
   const bulkAttendees = attendees.map((att, i) => ({
-    first: att.FirstName, last: att.LastName, email: att.Email, phone: att.CellPhone, barcode: att.ID, fam: i > 0 && att.CellPhone === attendees[i - 1].CellPhone
+    first: att.FirstName, last: att.LastName, email: att.Email, phone: att.CellPhone, 
+    barcode: att.ID, onMp: false, fam: i > 0 && att.CellPhone === attendees[i - 1].CellPhone
   }))
 
 
-  fs.writeFileSync(`src/data/${eventName}/${eventName}_${fileName}.json`, JSON.stringify(bulkAttendees, null, '\t'));
+  fs.writeFileSync(`./src/data/${eventName}/${eventName}_${fileName}.json`, JSON.stringify(bulkAttendees, null, '\t'));
   fs.writeFileSync(`./src/data/${eventName}/${eventName}_${fileName}.csv`, await json2csv(bulkAttendees, { emptyFieldValue: '' }));
 
   console.log(attendees.length, 'people not found');
