@@ -43,7 +43,7 @@ export async function removeAdults(contacts: EventContact[]): Promise<EventConta
 
 
 // Remove duplicates where first name, email (and phone) are the same
-export async function removeDuplicates(eventContacts: EventContact[]): Promise<EventContact[]> {
+export async function removeDuplicates(eventContacts: EventContact[], saveDuplicates = true): Promise<EventContact[]> {
   // console.log(contacts.length, 'with duplicates')
 
   // remove duplicates by id
@@ -101,7 +101,7 @@ export async function removeDuplicates(eventContacts: EventContact[]): Promise<E
 
   // fs.writeFileSync(`./src/data/eventContacts.json`, JSON.stringify(eventContacts, null, '\t'));
   // fs.writeFileSync(`./src/data/duplicates.json`, JSON.stringify(duplicates, null, '\t'));
-  fs.writeFileSync('src/data/duplicates.csv', await json2csv(duplicates, { emptyFieldValue: '' }));
+  saveDuplicates && fs.writeFileSync('src/data/duplicates.csv', await json2csv(duplicates, { emptyFieldValue: '' }));
 
   console.log(eventContacts.length, 'excluding duplicates')
   return eventContacts

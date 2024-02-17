@@ -41,11 +41,12 @@ export interface GroupContact {
 
 // 
 export interface Attendee {
+  ID: string;
   StudentID?: number;
   FirstName: string;
   LastName: string;
   Email: string;
-  CellPhone: number | string | null;
+  CellPhone: string ;
 }
 
 
