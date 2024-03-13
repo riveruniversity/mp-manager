@@ -1,4 +1,4 @@
-import { Attendee, CarShowContact, Contact, GroupContact, EventContact, EventParticipant, EventFormResponse } from "../types/MP";
+import { GroupContact } from "../types/MP";
 
 export function groupBy<T>(array: T[], groupKey: keyof T) {
 
@@ -62,18 +62,6 @@ export function sleep(milliseconds: number) {
 export function join(arr1: any[], arr2: any[]) {
   return arr1.map(participant => ({ ...participant, ...arr2.find(response => response.Contact_ID === participant.Contact_ID)! }))
 }
-
-export function joinParticipantInfo(formResponses: EventFormResponse[], eventParticipants: EventParticipant[]): EventContact[] {
-  return formResponses.map(response => ({ ...response, ...eventParticipants.find(participant => participant.Contact_ID === response.Contact_ID)! }))
-}
-
-export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {
-  const fullName = (p: Contact | CarShowContact) => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase()
-  const firstName = person.FirstName.toLowerCase().split(' ')[0]
-  const lastName = person.LastName.toLowerCase().split(' ')[0]
-  return response.filter((p: Contact | CarShowContact) => fullName(p).includes(firstName) && fullName(p).includes(lastName)) // remove last name to get more results (but is more inaccurate)
-}
-
 
 export async function showPercent(i: string, arr: GroupContact[]): Promise<void> {
   const percent: string = ((+i + 1) / arr.length * 100).toFixed(1)

@@ -1,12 +1,12 @@
-import * as fs from 'fs'
-import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
-import { getContact, C } from '../api/mp'
+
+import { getContact } from '../api/mp'
 import { people } from '../data/attendees'
-import { filterByName, formatPhone, groupBy, sleep } from '../utils';
+import { formatPhone, sleep } from '../utils';
 import { Attendee, CarShowContact, EventContact } from '../types/MP';
 import { Lib } from '../api/lib';
 import { removeDuplicates } from '../services/filters';
+import { attendeeToBulkTextFormat, contactToBulkTextFormat, filterByName } from '../services/converters';
 
 
 // used to save json files
@@ -58,41 +58,9 @@ const eventName: string = 'carShow';
   console.log(found.length, 'people found');
   // console.log(removed.length , ' people found by phone or email but first name didn\'t match');
 
-  contactToBulkTextFormat(found);  // MP Contact Format
-  attendeeToBulkTextFormat(notFound); // Eventbrite Format
+  contactToBulkTextFormat(found, eventName);  // MP Contact Format
+  attendeeToBulkTextFormat(notFound, eventName); // CSV (Eventbrite) Format
 
   await sleep(1000);
   Lib.updateCardIds(found, { prefix: 'C', onlyBlanks: true });
 })()
-
-
-
-async function contactToBulkTextFormat(attendees: CarShowContact[], fileName: string = 'onMp') {
-
-  const contacts: CarShowContact[] = await removeDuplicates(attendees as unknown as EventContact[], false) as unknown as CarShowContact[];
-
-  // const groupedByPhone = groupBy(contacts, 'Mobile_Phone');
-
-  const bulkContacts = contacts.map((att, i) => ({
-    first: att.Nickname || att.First_Name, last: att.Last_Name, email: att.Email_Address, phone: att.Mobile_Phone, 
-    barcode: att.ID_Card, onMp: true, fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
-  }))
-
-  fs.writeFileSync(`src/data/${eventName}/${eventName}_${fileName}.json`, JSON.stringify(bulkContacts, null, '\t'));
-  fs.writeFileSync(`./src/data/${eventName}/${eventName}_${fileName}.csv`, await json2csv(bulkContacts, { emptyFieldValue: '' })); // For Badge printing
-}
-
-
-
-async function attendeeToBulkTextFormat(attendees: Attendee[], fileName: string = 'notOnMp') {
-  const bulkAttendees = attendees.map((att, i) => ({
-    first: att.FirstName, last: att.LastName, email: att.Email, phone: att.CellPhone, 
-    barcode: att.ID, onMp: false, fam: i > 0 && att.CellPhone === attendees[i - 1].CellPhone
-  }))
-
-
-  fs.writeFileSync(`./src/data/${eventName}/${eventName}_${fileName}.json`, JSON.stringify(bulkAttendees, null, '\t'));
-  fs.writeFileSync(`./src/data/${eventName}/${eventName}_${fileName}.csv`, await json2csv(bulkAttendees, { emptyFieldValue: '' }));
-
-  console.log(attendees.length, 'people not found');
-}

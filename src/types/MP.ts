@@ -39,7 +39,7 @@ export interface GroupContact {
 }
 
 
-// 
+// Not on MP (generated from CSV)
 export interface Attendee {
   ID: string;
   StudentID?: number;
@@ -58,7 +58,7 @@ export interface CarShowContact {
   Last_Name: string;
   Nickname: string;
   Mobile_Phone: string | null;
-  Email_Address: string;
+  Email_Address: string | null;
   Household_Position_ID: number;
 }
 
@@ -83,4 +83,30 @@ export interface EventFormResponse {
 
 export interface EventContact extends EventParticipant, EventFormResponse {
 
+}
+
+
+
+export interface BulkAttendee {
+	first: string;
+	last: string;
+	email: string;
+	phone: string ;
+	barcode: string;
+	fam?: boolean;
+	file?: string;
+  onMp?: boolean;
+
+	url?: string;
+
+  // DB
+  _id?: string;
+  sentEmail?: boolean;
+  sentText?: boolean;
+  textError?: string;
+  emailError?: string;
+}
+
+export interface BulkAttendeeWithFile extends BulkAttendee {
+	file: string;
 }

@@ -9,12 +9,12 @@ const csvHeaders = ["First Name", "Last Name", "Email", "Cell Phone"];
 
 
 // >>> Load CSV File
-const csvFilePath = `./src/data/eventbrite.csv`
+const csvFile = `eventbrite.csv`
 
 
 export const people: Promise<Attendee[]> =
 
-  csv().fromFile(csvFilePath)
+  csv().fromFile(`./src/data/` + csvFile)
     // Filter headers
     .then((jsonObj: Attendee[]) => jsonObj.map((attendee) => Object.entries(attendee)
       .reduce((acc, [key, value]) => csvHeaders.includes(key) ? ({ ...acc, ...{ [key.replace(' ', '')]: value } }) : acc, {}))

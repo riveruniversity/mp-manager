@@ -9,14 +9,14 @@ interface UpdateOptions {
 
 export class Lib {
 
-  static async updateCardIds   (contacts: (EventContact | CarShowContact)[], { prefix, onlyBlanks }: UpdateOptions): Promise<void> {
+  static async updateCardIds(contacts: (EventContact | CarShowContact)[], { prefix, onlyBlanks }: UpdateOptions): Promise<void> {
     // export async function updateCardIds(contacts: EventContact[], {prefix, onlyBlanks}: UpdateOptions): Promise<void> {
-  
+
     if (onlyBlanks) {
       contacts = contacts.filter(c => c.ID_Card === null)
       console.log(contacts.length, 'contacts without Card_ID')
     }
-  
+
     prefix ??= ''
     // const contacts = array.filter(contact => contact.ID_Card)
     for (const contact of contacts) {
@@ -26,4 +26,13 @@ export class Lib {
       await sleep(10)
     }
   }
+
+  static trimData<T extends { [s: string]: unknown; } | ArrayLike<unknown>>(eventContacts: T): T {
+    return Object.entries(eventContacts).reduce((acc: T, [key, val] ) => ({...acc, ...{ [key]: trimString(val) }} ), {} as T);
+  }
+}
+
+function trimString(val: any) {
+  if (typeof val === 'string') return val.trim().replaceAll('  ', ' ')
+  else return val
 }
