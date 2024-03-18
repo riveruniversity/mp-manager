@@ -12,7 +12,7 @@ export async function contactToBulkTextFormat(attendees: CarShowContact[] | Even
   // const groupedByPhone = groupBy(contacts, 'Mobile_Phone');
 
   const bulkContacts: BulkAttendee[] = contacts.map((att, i) => ({
-    first: att.Nickname || att.First_Name, last: att.Last_Name, email: att.Email_Address || '', phone: att.Mobile_Phone || '', 
+    first: att.Nickname || att.First_Name, last: att.Last_Name, email: att.Email_Address || '', phone: att.Mobile_Phone || '',
     barcode: att.ID_Card || '', onMp: true, fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
   }))
 
@@ -26,7 +26,7 @@ export async function contactToBulkTextFormat(attendees: CarShowContact[] | Even
 
 export async function attendeeToBulkTextFormat(attendees: Attendee[], eventName: string, fileName: string = 'notOnMp') {
   const bulkAttendees = attendees.map((att, i) => ({
-    first: att.FirstName, last: att.LastName, email: att.Email, phone: att.CellPhone, 
+    first: att.FirstName, last: att.LastName, email: att.Email, phone: att.CellPhone,
     barcode: att.ID, onMp: false, fam: i > 0 && att.CellPhone === attendees[i - 1].CellPhone
   }))
 
@@ -39,9 +39,10 @@ export async function attendeeToBulkTextFormat(attendees: Attendee[], eventName:
 
 
 export function joinParticipantInfo(formResponses: EventFormResponse[], eventParticipants: EventParticipant[]): EventContact[] {
-  return formResponses
-    .map(response => ({ ...response, ...eventParticipants.find(participant => participant.Contact_ID === response.Contact_ID)! }))
+  const eventContacts: EventContact[] = formResponses.map((response: EventFormResponse) => ({ ...response, ...eventParticipants.find((participant: EventParticipant) => participant.Contact_ID === response.Contact_ID)! }))
+  return eventContacts
     .map(Lib.trimData)
+    .map(Lib.fixPhone)
 }
 
 export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {

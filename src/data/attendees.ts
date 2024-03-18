@@ -3,7 +3,7 @@ const csv = require('csvtojson')
 // import * as fs from 'fs'
 
 import { Attendee } from "../types/MP";
-import { groupOrderedArrayBy } from "../utils";
+import { fixNumber, groupOrderedArrayBy } from "../utils";
 
 const csvHeaders = ["First Name", "Last Name", "Email", "Cell Phone"];
 
@@ -34,21 +34,3 @@ export const people: Promise<Attendee[]> =
     })
 
 
-function fixNumber(num: string) {
-
-  const cleaned = String(num).trim()
-    .replace(/(?<!^)\+|[^\d+]+/g, '')  // Remove non digits and keep the +
-    .replace(/^00/, '+')               // Remove preceding '00'
-    .replace(/^\+?1(?=\d{10})/, '')    // Remove preceding '+1' or '1' for American numbers     
-
-
-  if (cleaned.length == 10) {
-    return cleaned
-  }
-  else if (cleaned.includes('+')) {
-    return ''
-  }
-  else {
-    return ''
-  }
-}

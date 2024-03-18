@@ -1,6 +1,6 @@
 import { putCardId } from "./mp"
 import { GroupContact, EventContact, CarShowContact } from "../types/MP"
-import { sleep } from "../utils"
+import { fixNumber, sleep, trimString } from "../utils"
 
 interface UpdateOptions {
   onlyBlanks?: boolean;
@@ -27,12 +27,15 @@ export class Lib {
     }
   }
 
-  static trimData<T extends { [s: string]: unknown; } | ArrayLike<unknown>>(eventContacts: T): T {
-    return Object.entries(eventContacts).reduce((acc: T, [key, val] ) => ({...acc, ...{ [key]: trimString(val) }} ), {} as T);
+  static trimData(eventContact: EventContact): EventContact {
+    const contact = Object.entries(eventContact);
+    return contact.reduce((acc: EventContact, [key, val]) => ({ ...acc, ...{ [key]: trimString(val) } }), {} as EventContact);
   }
-}
 
-function trimString(val: any) {
-  if (typeof val === 'string') return val.trim().replaceAll('  ', ' ')
-  else return val
+  static fixPhone(eventContact: EventContact): EventContact {
+    return {
+      ...eventContact,
+      ...{ Mobile_Phone: fixNumber(eventContact.Mobile_Phone) }
+    }
+  }
 }
