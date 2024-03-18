@@ -5,6 +5,7 @@ import { events } from '../config/vars'
 import { Lib } from '../api/lib';
 import { findDuplicates, insertValues } from '../services/sql';
 import { contactToBulkTextFormat, joinParticipantInfo } from '../services/converters';
+import { saveAttendees, saveDevAttendees } from '../services/db';
 
 // >>> Settings
 const eventName: string = 'womansConf';
@@ -37,7 +38,9 @@ const eventId = events.womansConf;
   //- -insertValues(eventContacts);
   //- -findDuplicates();
 
-  contactToBulkTextFormat(eventContacts, eventName);  // MP Contact Format
+  const bulkContacts = await contactToBulkTextFormat(eventContacts, eventName);  // MP Contact Format
+  saveAttendees(bulkContacts);
+  // saveDevAttendees();
 
   Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});
 })()

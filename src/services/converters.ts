@@ -4,9 +4,8 @@ import { json2csv, Json2CsvOptions } from 'json-2-csv';
 import { Lib } from '../api/lib';
 import { Attendee, CarShowContact, Contact, EventContact, EventParticipant, EventFormResponse, BulkAttendee } from "../types/MP";
 import { removeDuplicates } from "./filters";
-import { saveAttendees } from './db';
 
-export async function contactToBulkTextFormat(attendees: CarShowContact[] | EventContact[], eventName: string, fileName: string = 'onMp') {
+export async function contactToBulkTextFormat(attendees: CarShowContact[] | EventContact[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
 
   const contacts: CarShowContact[] = await removeDuplicates(attendees as unknown as EventContact[], false) as unknown as CarShowContact[];
 
@@ -20,7 +19,7 @@ export async function contactToBulkTextFormat(attendees: CarShowContact[] | Even
   fs.writeFileSync(`src/data/${eventName}/${eventName}_${fileName}.json`, JSON.stringify(bulkContacts, null, '\t'));
   fs.writeFileSync(`./src/data/${eventName}/${eventName}_${fileName}.csv`, await json2csv(bulkContacts, { emptyFieldValue: '' })); // For Badge printing
 
-  saveAttendees(bulkContacts)
+  return bulkContacts;
 }
 
 

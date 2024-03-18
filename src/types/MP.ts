@@ -82,7 +82,7 @@ export interface EventFormResponse {
 }
 
 export interface EventContact extends EventParticipant, EventFormResponse {
-
+  
 }
 
 

@@ -71,6 +71,17 @@ export async function saveAttendees(attendees: BulkAttendee[]) {
 }
 
 
+export async function saveDevAttendees() {
+  console.log('💾 saving dev attendees...')
+  saveAttendees(devAttendees);
+}
+
+const devAttendees: BulkAttendee[] = [
+  {first : "Wilhelm", last : "Mauch", email : "wmauch@revival.com", phone : '8134507575', barcode : '126634', fam : false},
+  {first : "Adrian", last : "Garcia", email : "agarcia@revival.com", phone : '8139512245', barcode : '118838', fam : false},
+  {first : "Dustin", last : "Wilson", email : "dwilson@revival.com", phone : '9407366991', barcode : 'M-118860', fam : false},
+]
+
 
 
 interface BulkInfo {

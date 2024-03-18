@@ -1,7 +1,8 @@
 
 export const dbUser = encodeURIComponent(process.env.MONGO_DB_USER || '');
 export const dbPass = encodeURIComponent(process.env.MONGO_DB_PASS || '');
-export const dbUrl = encodeURIComponent(process.env.DB_URL || '');
+export const dbApp = encodeURIComponent(process.env.DB_URL_APP || '');
+export const dbUrl = (process.env.DB_URL || '') + dbApp;
 
 
 export const group = {
