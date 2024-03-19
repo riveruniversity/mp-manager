@@ -16,7 +16,7 @@ import { removeDuplicates, removeOnline, removeStaff } from '../services/filters
   contacts = await removeStaff(contacts);
 
 
-  fs.writeFileSync('./src/membersWithPic.json', JSON.stringify(contacts, null, '\t'));
+  fs.writeFileSync('./src/members.json', JSON.stringify(contacts, null, '\t'));
 
 })()
 

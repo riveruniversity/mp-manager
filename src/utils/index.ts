@@ -145,15 +145,13 @@ export function cleanName(str: string) {
   str = str.replace(/(“|”|"|\().*(“|”|"|\))/g, '').replace('  ', ' ').replace(' -', '-').replace('- ', '-');
 
   // Remove titles
-  regex = /(^ps|pastor|^pst|^rev|reverend|apostle|prophet|prophetess|bishop|minister|missionary|^ev\.|evangelist|^mr|^mrs|^ms|^sis)(\.? ?)/i;
+  regex = /(^ps|pastor|^pst|^rev|reverend|apostle|prophet|prophetess|bishop|minister|missionary|^ev\.|evangelist|^mr|^mrs|^ms|^sister|^sis\.)(\.? ?)/i;
   str = str.replace(regex, '');
 
   // Remove any non-word chars but keep Dr. or hyphenated names like Tony-Ann
   // remove initials if used before first name (L. Winston Frickley)
-  regex = /[\pL'’`-]{2,}/g
-  regex = XRegExp("[\\p{L}A-zÀ-ÿ'’`-]{2,}", 'g')
-  if(str == 'Di Somma') console.log(str.match(regex))
-  if(str == 'Ĺisa') console.log(str.match(regex))
+  // regex = /[\pL'’`-]{2,}/g
+  regex = XRegExp("[\\p{L}A-zÀ-ÿ'’`-]{2,}", 'g');
   str = (str.match(regex) || [str]).map(capitalize).join(' ');
 
   return str
@@ -162,7 +160,8 @@ export function cleanName(str: string) {
 // O’Brien-Thomas
 export function capitalize(str: string) {
 
-  const nonWordRegex = /[^\w\sA-zÀ-ÿĹ\p{L}]/;
+  const nonWordRegex = /[^\w\sA-zÀ-ÿĹ\p{L}]/g;
+  // const nonWordRegex = XRegExp("[^\w\sA-zÀ-ÿĹ\p{L}]", 'g'); // both works
   const nonWordChar = str.match(nonWordRegex);
 
   if (str.match(/-/)) {

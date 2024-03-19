@@ -33,15 +33,15 @@ const eventId = events.womansConf;
   // - eventContacts = await removeNonWaiverSigned(contacts)             // only form responses are included, therefore all contacts signed the waiver
   // - eventContacts = contacts.filter(contact => !!contact.First_Name)  // Checked in locally but didn't submit form.
 
-  fs.writeFileSync('src/data/eventContacts.csv', await json2csv(eventContacts, { emptyFieldValue: ''}));
-  fs.writeFileSync('src/data/eventContacts.json', JSON.stringify(eventContacts, null, '\t'));
+  // fs.writeFileSync('src/data/eventContacts.json', JSON.stringify(eventContacts, null, '\t'));
+  // fs.writeFileSync('src/data/eventContacts.csv', await json2csv(eventContacts, { emptyFieldValue: ''}));
 
   // used to cross-check duplicates with SQL queries 
   //- -insertValues(eventContacts);
   //- -findDuplicates();
 
   const bulkContacts = await contactToBulkTextFormat(eventContacts, eventName);  // MP Contact Format
-  // saveAttendees(bulkContacts);
+  saveAttendees(bulkContacts);
   // saveDevAttendees();
 
   Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});
