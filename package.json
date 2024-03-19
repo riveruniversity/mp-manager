@@ -13,6 +13,7 @@
     "badge": "npx nodemon src/tasks/badges.ts --ext ts",
     "find": "npx nodemon src/tasks/find.ts  --ext ts",
     "event": "npx nodemon src/tasks/event.ts  --ext ts",
+    "event_": "npx node build/tasks/event.js",
     "populate": "npx nodemon src/tasks/populate.ts  --ext ts"
   },
   "dependencies": {
@@ -21,7 +22,8 @@
     "dotenv": "^16.0.3",
     "json-2-csv": "^4.1.0",
     "mongoose": "^8.2.1",
-    "sql.js": "^1.8.0"
+    "sql.js": "^1.8.0",
+    "xregexp": "^5.1.1"
   },
   "devDependencies": {
     "@types/node": "^18.11.2",

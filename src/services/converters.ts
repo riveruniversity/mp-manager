@@ -42,7 +42,7 @@ export function joinParticipantInfo(formResponses: EventFormResponse[], eventPar
   const eventContacts: EventContact[] = formResponses.map((response: EventFormResponse) => ({ ...response, ...eventParticipants.find((participant: EventParticipant) => participant.Contact_ID === response.Contact_ID)! }))
   return eventContacts
     .map(Lib.trimData)
-    .map(Lib.fixPhone)
+    .map(Lib.fixValues)
 }
 
 export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {

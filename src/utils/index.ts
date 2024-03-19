@@ -1,3 +1,4 @@
+import XRegExp from "xregexp";
 import { GroupContact } from "../types/MP";
 
 export function fixNumber(num: string | null, { addDashes } = { addDashes: true }) {
@@ -116,7 +117,7 @@ export function parseCsv(csv: string) {
 function cleanedKey(keyVal: string | number) {
   if (typeof keyVal == 'number') return keyVal;
 
-  const regexTitles: RegExp = /^ps|^pastor|^pst|^rev|^dr|^apostle|^prophet|^prophetess|^bishop|^minister|^ev|^evangelist|^mr|^mrs/;
+  const regexTitles: RegExp = /^ps|^pastor|^pst|^rev|^reverend|^dr|^apostle|^prophet|^prophetess|^bishop|^minister|^ev\.|^evangelist|^mr|^mrs/;
   const [first, second, third] = keyVal.toLowerCase().split(' ')
 
   if (second) {
@@ -134,6 +135,53 @@ function cleanedKey(keyVal: string | number) {
   keyVal = keyVal.split(/(?<=@.)/)[0]
   return keyVal
 }
+
+
+export function cleanName(str: string) {
+
+  var regex: RegExp;
+
+  // Remove nicknames like: “Marty” and (Patty)
+  str = str.replace(/(“|”|"|\().*(“|”|"|\))/g, '').replace('  ', ' ').replace(' -', '-').replace('- ', '-');
+
+  // Remove titles
+  regex = /(^ps|pastor|^pst|^rev|reverend|apostle|prophet|prophetess|bishop|minister|missionary|^ev\.|evangelist|^mr|^mrs|^ms|^sis)(\.? ?)/i;
+  str = str.replace(regex, '');
+
+  // Remove any non-word chars but keep Dr. or hyphenated names like Tony-Ann
+  // remove initials if used before first name (L. Winston Frickley)
+  regex = /[\pL'’`-]{2,}/g
+  regex = XRegExp("[\\p{L}A-zÀ-ÿ'’`-]{2,}", 'g')
+  if(str == 'Di Somma') console.log(str.match(regex))
+  if(str == 'Ĺisa') console.log(str.match(regex))
+  str = (str.match(regex) || [str]).map(capitalize).join(' ');
+
+  return str
+}
+
+// O’Brien-Thomas
+export function capitalize(str: string) {
+
+  const nonWordRegex = /[^\w\sA-zÀ-ÿĹ\p{L}]/;
+  const nonWordChar = str.match(nonWordRegex);
+
+  if (str.match(/-/)) {
+
+    let splitString = str.split('-');
+    str = splitString.map(s => capitalize(s)).join('-')
+  }
+  else if (nonWordChar) {
+    let splitString = str.split(nonWordChar[0]);
+    str = splitString.map(s => capitalize(s)).join(nonWordChar[0]);
+
+    if (nonWordChar.length > 1) console.log('⚠️ more than 1 substring', str)
+  }
+  else
+    str = str && str[0].toUpperCase() + str.slice(1).toLowerCase();
+
+  return str
+}
+
 
 export function isNum(val: string | number) {
   return !isNaN(Number(val));

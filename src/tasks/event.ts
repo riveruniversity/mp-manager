@@ -7,6 +7,8 @@ import { findDuplicates, insertValues } from '../services/sql';
 import { contactToBulkTextFormat, joinParticipantInfo } from '../services/converters';
 import { saveAttendees, saveDevAttendees } from '../services/db';
 
+import * as fs from 'fs'
+import { json2csv, Json2CsvOptions } from 'json-2-csv';
 // >>> Settings
 const eventName: string = 'womansConf';
 const eventId = events.womansConf;
@@ -17,7 +19,7 @@ const eventId = events.womansConf;
 (async function createEventParticipants() {
   
   let eventParticipants: EventParticipant[]  = (await getEventParticipants(eventId)); 
-  let formResponses: EventFormResponse[] = (await getFormResponses(eventId)).map(formResponse => ({...formResponse, Email_Address: formResponse.Email_Address}) );
+  let formResponses: EventFormResponse[] = (await getFormResponses(eventId));
 
   console.log(eventParticipants.length, 'event participants')
   console.log(formResponses.length, 'event form responses')
@@ -31,15 +33,15 @@ const eventId = events.womansConf;
   // - eventContacts = await removeNonWaiverSigned(contacts)             // only form responses are included, therefore all contacts signed the waiver
   // - eventContacts = contacts.filter(contact => !!contact.First_Name)  // Checked in locally but didn't submit form.
 
-  // fs.writeFileSync('src/data/eventContacts.csv', await json2csv(eventContacts, { emptyFieldValue: ''}));
-  // fs.writeFileSync('src/data/eventContacts.json', JSON.stringify(eventContacts, null, '\t'));
+  fs.writeFileSync('src/data/eventContacts.csv', await json2csv(eventContacts, { emptyFieldValue: ''}));
+  fs.writeFileSync('src/data/eventContacts.json', JSON.stringify(eventContacts, null, '\t'));
 
   // used to cross-check duplicates with SQL queries 
   //- -insertValues(eventContacts);
   //- -findDuplicates();
 
   const bulkContacts = await contactToBulkTextFormat(eventContacts, eventName);  // MP Contact Format
-  saveAttendees(bulkContacts);
+  // saveAttendees(bulkContacts);
   // saveDevAttendees();
 
   Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});

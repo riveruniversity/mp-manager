@@ -1,7 +1,6 @@
 
-
 import { getContact } from '../api/mp'
-import { people } from '../data/attendees'
+import { people } from './attendees'
 import { formatPhone, sleep } from '../utils';
 import { Attendee, CarShowContact, EventContact } from '../types/MP';
 import { Lib } from '../api/lib';

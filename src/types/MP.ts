@@ -27,13 +27,13 @@ export interface Contact {
 }
 
 export interface GroupContact {
-  Group_ID: number;
+  Group_ID: number | null;
   Contact_ID: number;
   ID_Card: string | null;
   Display_Name: string;
   First_Name: string;
   Last_Name: string;
-  Mobile_Phone: string;
+  Mobile_Phone: string | null;
   Image: string | null;
   Img: Buffer;
 }

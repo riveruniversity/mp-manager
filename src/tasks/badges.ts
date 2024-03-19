@@ -4,10 +4,10 @@ import * as fs from 'fs'
 import { GroupContact } from '../types/MP'
 import { groupBy } from '../utils'
 
-const staffGroupIds: number[] = [490, 491, 363]
+const staffGroupIds: number[] = [490, 491, 363];
 
 
-async function getAllRiverMembersInfo() {
+(async function getAllRiverMembersInfo() {
 
   const contacts = await getAllRiverMembers();
   if (!contacts) return
@@ -15,7 +15,7 @@ async function getAllRiverMembersInfo() {
   console.log(`${contacts.length} contacts`)
 
   const groupedContacts = groupBy(contacts, 'Contact_ID')
-  const noStaffMembers: GroupContact[][] = groupedContacts.filter((contacts: GroupContact[]) => !contacts.find((contact: GroupContact) => staffGroupIds.includes(contact.Group_ID)) && contacts.find((contact: GroupContact) => contact.Group_ID === 500) && contacts.find((contact: GroupContact) => contact.Group_ID === 504))
+  const noStaffMembers: GroupContact[][] = groupedContacts.filter((contacts: GroupContact[]) => !contacts.find((contact: GroupContact) => staffGroupIds.includes(contact.Group_ID || 0)) && contacts.find((contact: GroupContact) => contact.Group_ID === 500) && contacts.find((contact: GroupContact) => contact.Group_ID === 504))
   const cleanMembersArr: GroupContact[] = noStaffMembers.map((contacts: GroupContact[]) => contacts[0])
   const membersWithPic = cleanMembersArr.filter((contact: GroupContact) => contact.Image)
 
@@ -27,9 +27,7 @@ async function getAllRiverMembersInfo() {
   // fs.writeFileSync('./src/cleanMembers.json', JSON.stringify(cleanMembersArr, null, '\t'));
   fs.writeFileSync('./src/membersWithPic.json', JSON.stringify(membersWithPic, null, '\t'));
 
-}
-
-getAllRiverMembersInfo()
+})()
 
 
 

@@ -23,7 +23,7 @@ export const people: Promise<Attendee[]> =
     .then((attendees: Attendee[]) => attendees.map(attendee => ({ ...attendee, CellPhone: fixNumber(attendee.CellPhone) })))
     // Generate Id by combining all attendee data 
     .then((attendees: Attendee[]) => attendees.map((attendee) => {
-      const idString = Object.values(attendee).join('').toLowerCase().replace(/ /, '');
+      const idString = Object.values(attendee).join('').toLowerCase().replaceAll(/ /, '');
       return { ...attendee, ID: Buffer.from(idString).toString('base64') };
     }))
     // Grouping by Id to remove duplicates
