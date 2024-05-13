@@ -63,7 +63,7 @@ export async function saveAttendees(attendees: BulkAttendee[]) {
   BulkAttendeeModel.insertMany(attendees, { ordered: false, rawResult: true })
     .then(savedAttendees => console.log('💾 attendees saved', savedAttendees.insertedCount))
     .catch(err => {
-      console.log('Error when trying to save all attendees. See errors.json for more details!')
+      console.log('Error when trying to save attendees. See errors.json for more details!')
       fs.writeFileSync('src/data/errors.json', JSON.stringify(err.writeErrors, null, '\t'));
       console.log(err.insertedDocs.length, 'saved.')
       console.log(err.writeErrors.length, 'skipped.')
@@ -77,9 +77,8 @@ export async function saveDevAttendees() {
 }
 
 const devAttendees: BulkAttendee[] = [
-  {first : "Wilhelm", last : "Mauch", email : "wmauch@revival.com", phone : '8134507575', barcode : '126634', fam : false},
-  {first : "Adrian", last : "Garcia", email : "agarcia@revival.com", phone : '8139512245', barcode : '118838', fam : false},
-  {first : "Dustin", last : "Wilson", email : "dwilson@revival.com", phone : '9407366991', barcode : 'M-118860', fam : false},
+  {first : "Wilhelm", last : "Mauch", email : "wmauch@revival.com", phone : '8134507575', barcode : '126634', fam : false, onMp: true},
+  {first : "Adrian", last : "Garcia", email : "agarcia@revival.com", phone : '8139512245', barcode : '118838', fam : false,onMp: true},
 ]
 
 

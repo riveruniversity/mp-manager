@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
-import { EventContact, GroupContact } from "../types/MP";
+import { Attendee, CarShowContact, Contact, EventContact, GroupContact } from "../types/MP";
 import { group, youthWeek } from '../config/vars'
 import { groupArrayBy } from "../utils";
 
@@ -41,6 +41,15 @@ export async function removeAdults(contacts: EventContact[]): Promise<EventConta
   return contacts;
 }
 
+
+export async function removeDuplicatesById<T>(contacts: T[], saveDuplicates = true): Promise<T[]> {
+  // console.log(contacts.length, 'with duplicates')
+
+  // remove duplicates by id
+  let groupedContacts: Array<T[]> = groupArrayBy<T>(contacts, 'Contact_ID' as keyof T);
+  let filtered: T[] = groupedContacts.map((contacts: T[]) => contacts[0]) as T[]
+  return filtered
+}
 
 // Remove duplicates where first name, email (and phone) are the same
 export async function removeDuplicates(eventContacts: EventContact[], saveDuplicates = true): Promise<EventContact[]> {
@@ -113,4 +122,12 @@ export async function removeOnline(contacts: EventContact[]): Promise<EventConta
   contacts = contacts.filter(contact => !contact.Attending_Online)
   console.log(contacts.length, 'excluding online viewers')
   return contacts;
+}
+
+
+export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {
+  const fullName = (p: Contact | CarShowContact) => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase()
+  const firstName = person.FirstName.toLowerCase().split(' ')[0]
+  const lastName = person.LastName.toLowerCase().split(' ')[0]
+  return response.filter((p: Contact | CarShowContact) => fullName(p).includes(firstName) && fullName(p).includes(lastName)) // remove last name to get more results (but is more inaccurate)
 }

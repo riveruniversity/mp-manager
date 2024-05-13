@@ -2,15 +2,11 @@ import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getA
 import { events } from '../config/vars'
 import { Lib } from '../api/lib';
 
-// import { Contact, CarShowContact, Attendee } from '../types/MP'
- const contacts = require('../data/eventParticipants.json');
 
+(async function populateCardId() {
 
-populateCardId()
-
-async function populateCardId() {
   const eventId = events.youthWeek
-  // const contacts = await getBlankCardIds();
+  const contacts = await getBlankCardIds();
   // const contacts = await getFormResponses(eventId);
   // const contacts = await getRiverMembers();
   // const contacts = await getRiverStaff();
@@ -20,4 +16,4 @@ async function populateCardId() {
 
   console.log(contacts.length,` contacts`)
   Lib.updateCardIds(contacts, {prefix: 'C', onlyBlanks: true});
-}
+})()

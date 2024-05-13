@@ -38,7 +38,6 @@ export class Lib {
       ...{ First_Name: cleanName(eventContact.First_Name) },
       ...{ Last_Name: cleanName(eventContact.Last_Name) },
       ...{ Mobile_Phone: fixNumber(eventContact.Mobile_Phone) },
-      ...{ ID_Card: eventContact.ID_Card || 'C'+ eventContact.Contact_ID },
     }
   }
 }

@@ -9,9 +9,10 @@ import { saveAttendees, saveDevAttendees } from '../services/db';
 
 import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
+
 // >>> Settings
-const eventName: string = 'womansConf';
-const eventId = events.womansConf;
+const eventName: string = 'easterFest';
+const eventId = events.easterFest;
 
 // Form Responses needed info but does not contain Attending_Online field
 // so we need to get all local attendees from EventParticipants and merge them with the info from FormResponses

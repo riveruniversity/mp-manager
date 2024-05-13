@@ -173,7 +173,7 @@ export function capitalize(str: string) {
     let splitString = str.split(nonWordChar[0]);
     str = splitString.map(s => capitalize(s)).join(nonWordChar[0]);
 
-    if (nonWordChar.length > 1) console.log('⚠️ more than 1 substring', str)
+    if (nonWordChar.length > 1 && nonWordChar[0] !== nonWordChar[1]) console.log('⚠️  more than 1 substring', str)
   }
   else
     str = str && str[0].toUpperCase() + str.slice(1).toLowerCase();

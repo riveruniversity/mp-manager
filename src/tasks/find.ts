@@ -1,26 +1,26 @@
 
 import { getContact } from '../api/mp'
-import { people } from './attendees'
+import { importCsv } from './import'
 import { formatPhone, sleep } from '../utils';
 import { Attendee, CarShowContact, EventContact } from '../types/MP';
 import { Lib } from '../api/lib';
-import { removeDuplicates } from '../services/filters';
-import { attendeeToBulkTextFormat, contactToBulkTextFormat, filterByName } from '../services/converters';
+import { filterByName, removeDuplicates } from '../services/filters';
+import { attendeeToBulkTextFormat, contactToBulkTextFormat } from '../services/converters';
+import { saveAttendees, saveDevAttendees } from '../services/db';
 
 
 // used to save json files
 const eventName: string = 'carShow';
 
-
 (async function findMPRecord() {
+
+  const people: Attendee[] = await importCsv(`eventbrite.csv`);
 
   var found: CarShowContact[] = [];
   var removed: CarShowContact[] = [];
   var notFound: Attendee[] = [];
 
-  const ppl: Attendee[] = await people;
-
-  for (const person of ppl) {
+  for (const person of people) {
 
     // await getContact(`((${Field.First_Name}='${person.FirstName}' AND ${Field.Last_Name}='${person.LastName}') OR (Display_Name Like '${person.FirstName}%' AND Display_Name Like '${person.LastName}%') OR (${Field.Nickname}='${person.FirstName}' AND ${Field.Last_Name}='${person.LastName}'))`)
     // if (res.length) console.log(person.CellPhone + ': found by name ✅')
@@ -53,12 +53,18 @@ const eventName: string = 'carShow';
 
   await sleep(5000)
 
-  console.log(ppl.length, 'people listed');
+  console.log(people.length, 'people listed');
   console.log(found.length, 'people found');
   // console.log(removed.length , ' people found by phone or email but first name didn\'t match');
 
-  contactToBulkTextFormat(found, eventName);  // MP Contact Format
-  attendeeToBulkTextFormat(notFound, eventName); // CSV (Eventbrite) Format
+  found = await removeDuplicates(found as unknown as EventContact[], false) as unknown as CarShowContact[];
+  const bulkContacts = await contactToBulkTextFormat(found, eventName);  // MP Contact Format
+  saveAttendees(bulkContacts);
+
+  const bulkAttendees = await attendeeToBulkTextFormat(notFound, eventName); // CSV (Eventbrite) Format
+  saveAttendees(bulkAttendees);
+  
+  // saveDevAttendees();
 
   await sleep(1000);
   Lib.updateCardIds(found, { prefix: 'C', onlyBlanks: true });

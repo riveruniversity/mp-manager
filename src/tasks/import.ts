@@ -9,12 +9,10 @@ const csvHeaders = ["First Name", "Last Name", "Email", "Cell Phone"];
 
 
 // >>> Load CSV File
-const csvFile = `eventbrite.csv`
+export async function importCsv(fileName: string): Promise<Attendee[]> {
 
-
-export const people: Promise<Attendee[]> =
-
-  csv().fromFile(`./src/data/` + csvFile)
+  return csv()
+    .fromFile(`./src/data/` + fileName)
     // Filter headers
     .then((jsonObj: Attendee[]) => jsonObj.map((attendee) => Object.entries(attendee)
       .reduce((acc, [key, value]) => csvHeaders.includes(key) ? ({ ...acc, ...{ [key.replace(' ', '')]: value } }) : acc, {}))
@@ -23,7 +21,7 @@ export const people: Promise<Attendee[]> =
     .then((attendees: Attendee[]) => attendees.map(attendee => ({ ...attendee, CellPhone: fixNumber(attendee.CellPhone) })))
     // Generate Id by combining all attendee data 
     .then((attendees: Attendee[]) => attendees.map((attendee) => {
-      const idString = Object.values(attendee).join('').toLowerCase().replaceAll(/ /, '');
+      const idString = Object.values(attendee).join('').toLowerCase().replaceAll(/ /g, '');
       return { ...attendee, ID: Buffer.from(idString).toString('base64') };
     }))
     // Grouping by Id to remove duplicates
@@ -32,5 +30,7 @@ export const people: Promise<Attendee[]> =
       const groupedById = groupOrderedArrayBy<Attendee>(attendees, "ID");
       return groupedById.map(attendee => attendee[0]);
     })
+
+}
 
 

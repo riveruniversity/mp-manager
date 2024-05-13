@@ -5,7 +5,7 @@ import { getAccessToken } from '../services/oauth'
 dotenv.config();
 
 import { group } from '../config/vars'
-import { EventContact, EventParticipant, GroupContact } from '../types/MP';
+import { Contact, EventContact, EventParticipant, GroupContact } from '../types/MP';
 
 
 interface Parameter {
@@ -18,6 +18,10 @@ interface Parameter {
   responseType?: ResponseType;
 }
 
+
+export interface ContactParameter extends Partial<Contact> {
+  Contact_ID: number;
+}
 
 
 export function getContact(filtr: string) {
@@ -55,11 +59,11 @@ export function getBlankCardIds() {
 }
 //: --------------------------------------------------------
 
-export function getAllRiverMembers() {
+export function getAllRiverMembers(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`
   const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Image}`
-  const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults} AND Participant_ID_Table.Participant_Engagement_ID=1` // AND Not ${Field.ID_Card} Like 'M-%'
+  const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults} ` // AND Participant_ID_Table.Participant_Engagement_ID=1 // AND Not ${Field.ID_Card} Like 'M-%'
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -94,8 +98,8 @@ export function getSignedWaiver() {
 export function getRiverStaff(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}`
-  const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff},${group.intern},${group.contractor})`
+  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Email_Address}`
+  const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff},${group.intern},${group.contractor}) AND Group_Participants.End_Date is null`
   const top = `&$top=1000`
 
   return request(table, { method: 'get', select, filter, top })
@@ -135,6 +139,17 @@ export function getFormResponses(eid: number): Promise<EventContact[]> {
   const top = `&$top=10000`
 
   return request(table, { method: 'get', select, filter, top })
+}
+//: --------------------------------------------------------
+
+
+export function updateContact(Fields: ContactParameter) {
+
+  const table = `Contacts`
+
+  const data = [Fields];
+
+  return request(table, { method: 'put', data })
 }
 //: --------------------------------------------------------
 

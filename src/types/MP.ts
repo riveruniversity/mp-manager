@@ -77,6 +77,7 @@ export interface EventFormResponse {
   ID_Card: string | null;
   First_Name: string;
   Last_Name: string;
+  Nickname?: string;
   Email_Address: string | null;
   Mobile_Phone: string | null;
 }

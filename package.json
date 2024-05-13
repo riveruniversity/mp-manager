@@ -1,6 +1,6 @@
 {
   "name": "mp-manager",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "build/index.js",
   "author": "Wilhelm Mauch",
   "license": "ISC",
@@ -9,9 +9,10 @@
   "scripts": {
     "start": "nodemon",
     "sql": "npx nodemon src/services/sql.ts",
-    "dev": "npx nodemon src/index.ts",
+    "clean": "npx nodemon src/tasks/db.clean.ts",
     "badge": "npx nodemon src/tasks/badges.ts --ext ts",
     "find": "npx nodemon src/tasks/find.ts  --ext ts",
+    "download": "npx nodemon src/tasks/download.ts  --ext ts",
     "event": "npx nodemon src/tasks/event.ts  --ext ts",
     "event_": "npx node build/tasks/event.js",
     "populate": "npx nodemon src/tasks/populate.ts  --ext ts"
@@ -20,7 +21,7 @@
     "axios": "^1.6.7",
     "csvtojson": "^2.0.10",
     "dotenv": "^16.0.3",
-    "json-2-csv": "^4.1.0",
+    "json-2-csv": "^5.5.1",
     "mongoose": "^8.2.1",
     "sql.js": "^1.8.0",
     "xregexp": "^5.1.1"
