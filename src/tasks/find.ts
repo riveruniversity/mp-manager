@@ -16,12 +16,13 @@ const eventName: string = 'carShow';
 const eventbriteId: number = 905321108807;
 
 (async function findMPRecord() {
-
-  const people: Attendee[] = await getAttendees(eventbriteId);
-
+  
   var found: Contact[] = [];
   var removed: Contact[] = [];
   var notFound: Attendee[] = [];
+  
+  const people: Attendee[] = await getAttendees(eventbriteId);
+  console.log('🔍', people.length, 'searching people ...');
 
   for (const person of people) {
 
@@ -34,11 +35,11 @@ const eventbriteId: number = 905321108807;
     }
 
     if (res?.length) {
-      console.log(person.Mobile_Phone || person.First_Name + ' ' + person.Last_Name, ': found by phone ✅', res.length);
+      // console.log(person.Mobile_Phone || person.First_Name + ' ' + person.Last_Name, ': found by phone ✅', res.length);
     } else if (person.Email_Address) {
       res = await getContact(`Contacts.Email_Address='${person.Email_Address}'`);
       if (res?.length) {
-        console.log(person.Mobile_Phone || person.First_Name + ' ' + person.Last_Name, ': found by email ✅', res.length)
+        // console.log(person.Mobile_Phone || person.First_Name + ' ' + person.Last_Name, ': found by email ✅', res.length)
       }
     }
 
@@ -50,14 +51,16 @@ const eventbriteId: number = 905321108807;
         removed = removed.concat(res)
     } else {
       notFound = notFound.concat(person)
-      console.log(person.Mobile_Phone || person.First_Name, ': not found ❌')
+      // console.log(person.Mobile_Phone || person.First_Name, ': not found ❌')
     }
   }
 
   await sleep(5000)
 
-  console.log(people.length, 'people listed');
-  console.log(found.length, 'people found');
+
+  console.log('✅', found.length, 'people found on MP');
+  console.log('❌', notFound.length, 'people not found on MP');
+  
   // console.log(removed.length , ' people found by phone or email but first name didn\'t match');
 
   found = await removeDuplicates(found as unknown as EventContact[], false) as unknown as Contact[];

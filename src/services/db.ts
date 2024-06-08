@@ -34,7 +34,7 @@ const BulkAttendeeModel = model<BulkAttendee>('Attendee', attendeeSchema);
       return null
     });
 
-  if (db) console.log(new Date().getTime(), '🔗 connected to MongoDB:', db.connection.name);
+  if (db) console.log('🔗', 'connected to MongoDB:', db.connection.name);
 
   dbInitiated = true;
 })()

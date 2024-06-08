@@ -10,20 +10,22 @@ const eb = eventbrite({ token: eventbriteToken });
 
 
 export async function getAttendees(eventId: number): Promise<Attendee[]> {
-  console.log(new Date().getTime(), '👥 getting attendees from Eventbrite')
+  console.log('🗃️ ', 'getting attendees from Eventbrite...')
   const url = `/events/${eventId}/attendees/?expand=answers&continuation=`;
   return getAllPages<AttendeeData>(url, 'attendees')
 
     // Generate Id by combining all attendee data & fix phone numbers
     .then((attendees: AttendeeData[]) => attendees.map((attendee) => {
       const cell_phone = fixNumber(attendee.profile.cell_phone)
-      const idString = Object.values(attendee).join('').toLowerCase().replaceAll(/ /g, '');
-      return { ...attendee.profile, cell_phone, id: Buffer.from(idString).toString('base64') };
+      const id = generateId(attendee.profile);
+      return { ...attendee.profile, cell_phone, id };
     }))
     // Grouping by Id to remove duplicates
     .then(async (attendees: Profile[]) => {
+      console.log('👥', attendees.length, 'attendees on Eventbrite');
       // fs.writeFileSync(`src/data/attendees.csv`, await json2csv(attendees, { emptyFieldValue: '' }));
       const groupedById = groupOrderedArrayBy<Profile>(attendees, 'id');
+      console.log('👥', groupedById.length, 'attendees excluding duplicates')
       return groupedById.map(attendee => attendee[0]);
     })
     // Convert to standard Attendee interface
@@ -56,6 +58,14 @@ async function getAllPages<T>(url: string, key: string) {
     console.log(parsedError);
     throw parsedError;
   }
+}
+
+
+function generateId(attendee: Profile): string {
+  const { id, name, addresses, ...profile} = attendee;
+  const idString = Object.values(profile).join('').toLowerCase().replaceAll(/ /g, '');
+  const idBase64 = Buffer.from(idString).toString('base64');
+  return idBase64;
 }
 
 
