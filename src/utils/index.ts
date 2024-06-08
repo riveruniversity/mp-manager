@@ -1,7 +1,7 @@
 import XRegExp from "xregexp";
 import { GroupContact } from "../types/MP";
 
-export function fixNumber(num: string | null, { addDashes } = { addDashes: true }) {
+export function fixNumber(num: string | null | undefined, { addDashes } = { addDashes: true }) {
 
   if (!num) return ''
 

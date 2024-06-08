@@ -2,7 +2,8 @@ import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
-import { Attendee, CarShowContact, Contact, EventContact, GroupContact } from "../types/MP";
+import { Contact, EventContact, GroupContact } from "../types/MP";
+import { Attendee } from "../types/Eventbrite";
 import { group, youthWeek } from '../config/vars'
 import { groupArrayBy } from "../utils";
 
@@ -125,9 +126,9 @@ export async function removeOnline(contacts: EventContact[]): Promise<EventConta
 }
 
 
-export function filterByName(response: CarShowContact[] | Contact[], person: Attendee) {
-  const fullName = (p: Contact | CarShowContact) => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase()
-  const firstName = person.FirstName.toLowerCase().split(' ')[0]
-  const lastName = person.LastName.toLowerCase().split(' ')[0]
-  return response.filter((p: Contact | CarShowContact) => fullName(p).includes(firstName) && fullName(p).includes(lastName)) // remove last name to get more results (but is more inaccurate)
+export function filterByName(response: Contact[] | Contact[], person: Attendee) {
+  const fullName = (p: Contact | Contact) => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase()
+  const firstName = person.First_Name.toLowerCase().split(' ')[0]
+  const lastName = person.Last_Name.toLowerCase().split(' ')[0]
+  return response.filter((p: Contact | Contact) => fullName(p).includes(firstName) && fullName(p).includes(lastName)) // remove last name to get more results (but is more inaccurate)
 }

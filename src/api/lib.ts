@@ -1,5 +1,5 @@
 import { putCardId } from "./mp"
-import { GroupContact, EventContact, CarShowContact } from "../types/MP"
+import { GroupContact, EventContact, CarShowContact, Contact } from "../types/MP"
 import { cleanName, fixNumber, sleep, trimString } from "../utils"
 
 interface UpdateOptions {
@@ -9,7 +9,7 @@ interface UpdateOptions {
 
 export class Lib {
 
-  static async updateCardIds(contacts: (EventContact | CarShowContact)[], { prefix, onlyBlanks }: UpdateOptions = { onlyBlanks: true} ): Promise<void> {
+  static async updateCardIds(contacts: (EventContact | CarShowContact | Contact)[], { prefix, onlyBlanks }: UpdateOptions = { onlyBlanks: true} ): Promise<void> {
     // export async function updateCardIds(contacts: EventContact[], {prefix, onlyBlanks}: UpdateOptions): Promise<void> {
 
     if (onlyBlanks) {

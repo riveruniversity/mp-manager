@@ -2,14 +2,20 @@ import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { Lib } from '../api/lib';
-import { Attendee, CarShowContact, EventContact, EventParticipant, EventFormResponse, BulkAttendee } from "../types/MP";
+import { CarShowContact, EventContact, EventParticipant, EventFormResponse, BulkAttendee, Contact } from "../types/MP";
+import { Attendee } from '../types/Eventbrite';
 
 
-export async function contactToBulkTextFormat(contacts: CarShowContact[] | EventContact[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
+export async function contactToBulkTextFormat(contacts: Contact[] | CarShowContact[] | EventContact[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
 
   const bulkContacts: BulkAttendee[] = contacts.map((att, i) => ({
-    first: att.Nickname || att.First_Name, last: att.Last_Name, email: att.Email_Address || '', phone: att.Mobile_Phone || '',
-    barcode: att.ID_Card || 'C' + att.Contact_ID, onMp: true, fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
+    first: att.Nickname || att.First_Name, 
+    last: att.Last_Name, 
+    email: att.Email_Address || '', 
+    phone: att.Mobile_Phone || '',
+    barcode: att.ID_Card || 'C' + att.Contact_ID, 
+    onMp: true, 
+    fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
   }))
 
   fs.writeFileSync(`src/data/${eventName}_${fileName}.json`, JSON.stringify(bulkContacts, null, '\t'));
@@ -22,8 +28,12 @@ export async function contactToBulkTextFormat(contacts: CarShowContact[] | Event
 
 export async function attendeeToBulkTextFormat(attendees: Attendee[], eventName: string, fileName: string = 'notOnMp') {
   const bulkAttendees: BulkAttendee[] = attendees.map((att, i) => ({
-    first: att.FirstName, last: att.LastName, email: att.Email, phone: att.CellPhone,
-    barcode: att.ID, onMp: false, fam: i > 0 && att.CellPhone === attendees[i - 1].CellPhone
+    first: att.First_Name, 
+    last: att.Last_Name, 
+    email: att.Email_Address || '', 
+    phone: att.Mobile_Phone || '',
+    barcode: att.Contact_ID, 
+    onMp: false, fam: i > 0 && att.Mobile_Phone === attendees[i - 1].Mobile_Phone
   }))
 
   fs.writeFileSync(`./src/data/${eventName}_${fileName}.json`, JSON.stringify(bulkAttendees, null, '\t'));

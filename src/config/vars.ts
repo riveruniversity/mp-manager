@@ -3,6 +3,7 @@ export const dbUser = encodeURIComponent(process.env.MONGO_DB_USER || '');
 export const dbPass = encodeURIComponent(process.env.MONGO_DB_PASS || '');
 export const dbApp = encodeURIComponent(process.env.DB_URL_APP || '');
 export const dbUrl = (process.env.DB_URL || '') + dbApp;
+export const eventbriteToken = (process.env.EVENTBRITE_TOKEN || '');
 
 
 export const events = {
@@ -15,7 +16,7 @@ export const events = {
   turkeyFest: 69603,
   christmas: 69604,
   christmasChild: 69617,
-  mlcTransfigured: 69036,
+  mlcShout: 69536,
   easterFest: 69855
 }
 

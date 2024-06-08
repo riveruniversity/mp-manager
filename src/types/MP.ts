@@ -39,16 +39,6 @@ export interface GroupContact {
 }
 
 
-// Not on MP (generated from CSV)
-export interface Attendee {
-  ID: string;
-  StudentID?: number;
-  FirstName: string;
-  LastName: string;
-  Email: string;
-  CellPhone: string ;
-}
-
 
 export interface CarShowContact {
   Contact_ID: number;
