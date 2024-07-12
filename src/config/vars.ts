@@ -8,7 +8,7 @@ export const eventbriteToken = (process.env.EVENTBRITE_TOKEN || '');
 
 export const events = {
   carShow: 69871,
-  youthWeek: 69200,
+  youthWeek: 69538,
   fireConf: 69201,
   thatsIt: 69349,
   mensConf: 68412,
@@ -19,6 +19,8 @@ export const events = {
   mlcShout: 69536,
   easterFest: 69855
 }
+
+
 
 export const group = {
   member: 504,
@@ -32,10 +34,10 @@ export const group = {
 
 export const youthWeek = {
   groupRegistrations: 542,
-  kids: 532,
-  youth: 533,
-  adult: 534,
-  532: 'kids',
-  533: 'youth',
-  534: 'adult'
+  kids: 545,
+  youth: 546,
+  adult: 547,
+  545: 'kids',
+  546: 'youth',
+  547: 'adult'
 }

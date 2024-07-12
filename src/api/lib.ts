@@ -9,7 +9,7 @@ interface UpdateOptions {
 
 export class Lib {
 
-  static async updateCardIds(contacts: (EventContact | CarShowContact | Contact)[], { prefix, onlyBlanks }: UpdateOptions = { onlyBlanks: true} ): Promise<void> {
+  static async updateCardIds(contacts: (EventContact | CarShowContact | Contact)[], { prefix, onlyBlanks = true }: UpdateOptions): Promise<void> {
     // export async function updateCardIds(contacts: EventContact[], {prefix, onlyBlanks}: UpdateOptions): Promise<void> {
 
     if (onlyBlanks) {

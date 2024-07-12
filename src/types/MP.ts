@@ -1,12 +1,14 @@
+import { PhoneNumber } from "libphonenumber-js";
+
 export interface Contact {
   Contact_ID: number;
-  ID_Card: string;
+  ID_Card: string | null;
   First_Name: string;
   Last_Name: string;
   Display_Name: string;
-  Nickname: string;
-  Mobile_Phone: string;
-  Email_Address: string;
+  Nickname?: string;
+  Mobile_Phone: string | null;
+  Email_Address: string | null;
   Gender?: any;
   Member_Status_ID?: any;
   Member_Status?: any;
@@ -39,6 +41,57 @@ export interface GroupContact {
 }
 
 
+export interface EventParticipant {
+  Contact_ID: number;
+  ID_Card: string | null;
+  Group_ID: number | null;
+  Household_Position_ID: number;
+  Attending_Online: boolean;
+  Event_Participant_ID: number,
+  Participant_ID: number,
+  Participation_Status_ID: number,
+  Notes: string;
+  // Phone_Number: string;
+}
+
+export interface YouthWeekParticipant extends EventParticipant, Contact {
+  Adult_Phone: string; // extracted from Participant.Notes
+  Phone_Number: PhoneNumber | undefined;
+  Type: YouthWeekRegistrationInfo['detail'];
+  Form: string;
+  Registration_Info: YouthWeekRegistrationInfo;
+  Group_Leader: boolean;
+  Church_Group?: boolean;
+}
+
+export interface YouthWeekRegistrationInfo {
+  detail: 'registrant' | 'adult' | 'youth' | 'kids' | '_'; //  'adult' if not using the dynamic form
+  adult?: YouthWeekAdult;
+  emergencyContact: YouthWeekEmergencyContact;
+  type?: string;
+  churchOrGroup?: YouthWeekChurch;
+	qrCodePhone?: string;
+}
+
+
+
+export interface EventFormResponse {
+  // Form Response
+  Contact_ID: number;
+  ID_Card: string | null;
+  First_Name: string;
+  Last_Name: string;
+  Nickname?: string;
+  Email_Address: string | null;
+
+  Phone_Number: string | null;
+}
+
+export interface EventContact extends EventParticipant, EventFormResponse, Contact {
+
+}
+
+
 
 export interface CarShowContact {
   Contact_ID: number;
@@ -53,42 +106,40 @@ export interface CarShowContact {
 }
 
 
-export interface EventParticipant {
-  Contact_ID: number;
-  Group_ID: number | null;
-  Household_Position_ID: number;
-  Attending_Online: boolean;
-  // Phone_Number: string;
+
+
+interface YouthWeekEmergencyContact {
+  fullName: string;
+  phoneNumber: string;
 }
 
-export interface EventFormResponse {
-  // Form Response
-  Contact_ID: number;
-  ID_Card: string | null;
-  First_Name: string;
-  Last_Name: string;
-  Nickname?: string;
-  Email_Address: string | null;
-  Mobile_Phone: string | null;
+interface YouthWeekAdult {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  emailAddress: string;
+  eventParticipantID: number;
 }
 
-export interface EventContact extends EventParticipant, EventFormResponse {
 
+interface YouthWeekChurch {
+  name: string;
+  location: string;
 }
 
 
 
 export interface BulkAttendee {
-	first: string;
-	last: string;
-	email: string;
-	phone: string ;
-	barcode: string;
-	fam?: boolean;
-	file?: string;
+  first: string;
+  last: string;
+  email: string;
+  phone: string;
+  barcode: string;
+  fam?: boolean;
+  file?: string;
   onMp?: boolean;
 
-	url?: string;
+  url?: string;
 
   // DB
   _id?: string;
@@ -99,5 +150,5 @@ export interface BulkAttendee {
 }
 
 export interface BulkAttendeeWithFile extends BulkAttendee {
-	file: string;
+  file: string;
 }

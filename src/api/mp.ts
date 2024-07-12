@@ -123,9 +123,23 @@ export function getPreregisteredGroups() {
 export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
   const table = `Event_Participants`
-  const select = `$select=${C.Contact_ID}, Event_Participants.Group_ID, ${C.Household_Position_ID}, Attending_Online` //, ${Field.First_Name}, ${Field.Last_Name}
+  const select = `$select=Event_Participants.Group_ID, Event_Participants.Notes, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}`
   const filter = `&$filter=Event_ID=${eid}` // AND ${Signed_Waiver}  AND Attending_Online='false' // AND Participant_ID_Table_Contact_ID_Table.ID_Card NOT Like 'C%'
-  const top = `&$top=10000`
+  const top = `&$top=20000`
+
+  return request(table, { method: 'get', select, filter, top })
+}
+//: ........................................................
+
+
+
+export function getYouthParticipants(eid: number): Promise<EventParticipant[]> {
+  
+  const table = `Event_Participants`
+  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}, Event_Participants.Group_ID, Event_Participants.Notes, Group_ID_Table.Group_Name, ${P.Member_Status}, Event_Participants._Setup_Date` 
+  const filter = `&$filter=Event_ID=${eid} AND Event_Participants.Participation_Status_ID <> 5 ` //
+  // AND ${Signed_Waiver}  AND Attending_Online='false' || AND Participant_ID_Table_Contact_ID_Table.ID_Card NOT Like 'C%'  || 5=Cancelled ||  AND Event_Participants.Notes Is Not null || AND Mobile_Phone is null
+  const top = `&$top=20000`
 
   return request(table, { method: 'get', select, filter, top })
 }
@@ -143,11 +157,11 @@ export function getFormResponses(eid: number): Promise<EventContact[]> {
 //: --------------------------------------------------------
 
 
-export function updateContact(Fields: ContactParameter) {
+export function updateContacts(Fields: ContactParameter | ContactParameter[]) {
 
   const table = `Contacts`
 
-  const data = [Fields];
+  const data = Array.isArray(Fields) ? Fields : [Fields];
 
   return request(table, { method: 'put', data })
 }
@@ -158,7 +172,7 @@ export function putCardId(Contact_ID: number, ID_Card: string) {
 
   const table = `Contacts`
 
-  const data = [{ Contact_ID, ID_Card }];
+  const data = [{ Contact_ID, ID_Card }]; // Array Updates a series of records
 
   return request(table, { method: 'put', data })
 }
@@ -202,12 +216,21 @@ async function request(table: string, param: Parameter) {
     // config.responseEncoding = "base64"
   }
 
+  // console.log('config.url', config.url)
+
   try {
     return axios(config)
-    .then((response: AxiosResponse) => response.data)
-    .catch(error => console.log(error.response?.status, error.response?.statusText, error.response?.data));
+    .then((response: AxiosResponse) => { console.log('✔️ ', param.method.toUpperCase(), table); return response.data })
+    // .then((response: AxiosResponse) => response.data)
+    .catch(error => {
+      console.log('❌ ', param.method.toUpperCase(), table);
+      console.log(error.response?.status, error.response?.statusText, error.response?.data);
+      if (param.method == 'get') return [];
+      else return null;
+  });
 
   } catch (error: any) {
+    
     console.log('cause', error.cause);
     console.log('Error when requesting ', config.url);
   }
@@ -225,6 +248,12 @@ export const C = {
   Email_Address: `Participant_ID_Table_Contact_ID_Table.Email_Address`,
   Image: `Participant_ID_Table_Contact_ID_Table.dp_fileUniqueId Image`,
   Household_Position_ID: `Participant_ID_Table_Contact_ID_Table.Household_Position_ID`
+  
+}
+
+
+export const P = {
+  Member_Status: `Participant_ID_Table_Contact_ID_Table_Participant_Record_Table_Member_Status_ID_Table.Member_Status`
 }
 
 const Exclude_Minors = `NOT Participant_ID_Table_Contact_ID_Table.Household_Position_ID=2`

@@ -32,6 +32,21 @@ export function trimString(val: any) {
 }
 
 
+// Object.prototype.getKeyByValue = function (value) {
+//   return Object.keys(this).find(key => this[key as keyof Object] === value);
+// }
+
+export function getKeyByValue(object: any, value: string | number): string | undefined {
+  return Object.entries(object).find(([key, val]: [key: string, val: any]) => val === value)?.at(0) as string || undefined;
+}
+
+// const groupBy = <T>(array: T[], predicate: (value: T, index: number, array: T[]) => string) =>
+//   array.reduce((acc, value, index, array) => {
+//     (acc[predicate(value, index, array)] ||= []).push(value);
+//     return acc;
+//   }, {} as { [key: string]: T[] });
+// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
+
 export function groupBy<T>(array: T[], groupKey: keyof T) {
 
   const keys = []

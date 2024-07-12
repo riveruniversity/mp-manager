@@ -7,12 +7,13 @@ import { findDuplicates, insertValues } from '../services/sql';
 import { contactToBulkTextFormat, joinParticipantInfo } from '../services/converters';
 import { saveAttendees, saveDevAttendees } from '../services/db';
 
+
 import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
+import { getKeyByValue } from '../utils';
 
 // >>> Settings
-const eventName: string = 'mlcShout';
-const eventId = events.mlcShout;
+const eventId = events.youthWeek; 
 
 // Form Responses needed info but does not contain Attending_Online field
 // so we need to get all local attendees from EventParticipants and merge them with the info from FormResponses
@@ -40,9 +41,10 @@ const eventId = events.mlcShout;
   //- -insertValues(eventContacts);
   //- -findDuplicates();
 
-  const bulkContacts = await contactToBulkTextFormat(eventContacts, eventName);  // MP Contact Format
-  saveAttendees(bulkContacts);
+  const eventName: string = getKeyByValue(events, eventId) || '';
+  // const bulkContacts = await contactToBulkTextFormat(eventContacts, eventName);  // MP Contact Format
+  // saveAttendees(bulkContacts);
   // saveDevAttendees();
 
-  Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});
+  // Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});
 })()
