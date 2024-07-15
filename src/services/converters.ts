@@ -2,11 +2,11 @@ import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { Lib } from '../api/lib';
-import { CarShowContact, EventContact, EventParticipant, EventFormResponse, BulkAttendee, Contact } from "../types/MP";
+import { CarShowContact, EventContact, EventParticipant, EventFormResponse, BulkAttendee, Contact, YouthWeekParticipant } from "../types/MP";
 import { Attendee } from '../types/Eventbrite';
 
-
-export async function contactToBulkTextFormat(contacts: Contact[] | CarShowContact[] | EventContact[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
+// Contact[] | CarShowContact[] | EventContact[] | YouthWeekParticipant[]
+export async function contactToBulkTextFormat(contacts: YouthWeekParticipant[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
 
   const bulkContacts: BulkAttendee[] = contacts.map((att, i) => ({
     first: att.Nickname || att.First_Name, 
@@ -15,7 +15,8 @@ export async function contactToBulkTextFormat(contacts: Contact[] | CarShowConta
     phone: att.Mobile_Phone || '',
     barcode: att.ID_Card || 'C' + att.Contact_ID, 
     onMp: true, 
-    fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone
+    fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone,
+    type: att.Type
   }))
 
   fs.writeFileSync(`src/data/${eventName}_${fileName}.json`, JSON.stringify(bulkContacts, null, '\t'));

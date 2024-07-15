@@ -66,7 +66,7 @@ export interface YouthWeekParticipant extends EventParticipant, Contact {
 }
 
 export interface YouthWeekRegistrationInfo {
-  detail: 'registrant' | 'adult' | 'youth' | 'kids' | '_'; //  'adult' if not using the dynamic form
+  detail: 'adult' | 'youth' | 'kids' | '_'; //  'adult' if not using the dynamic form
   adult?: YouthWeekAdult;
   emergencyContact: YouthWeekEmergencyContact;
   type?: string;
@@ -139,7 +139,7 @@ export interface BulkAttendee {
   fam?: boolean;
   file?: string;
   onMp?: boolean;
-  type?: 'adult' | 'kids' | 'youth';
+  type?: 'adult' | 'kids' | 'youth' | '_';
 
   url?: string;
 

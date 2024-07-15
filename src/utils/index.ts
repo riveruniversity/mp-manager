@@ -187,7 +187,7 @@ export function cleanName(str: string) {
 // O’Brien-Thomas
 export function capitalize(str: string) {
 
-  const nonWordRegex = /[^\w\sA-zÀ-ÿĹ\p{L}]/g;
+  const nonWordRegex = /[^\w\sA-zÀ-ÿĹ\p{L}]/gu;
   // const nonWordRegex = XRegExp("[^\w\sA-zÀ-ÿĹ\p{L}]", 'g'); // both works
   const nonWordChar = str.match(nonWordRegex);
 

@@ -16,9 +16,9 @@ import { formatNumber, getKeyByValue } from '../utils';
 const eventId = events.youthWeek;
 const eventName: string = getKeyByValue(events, eventId) || '';
 
-const populateGuardianPhones = false;
-const populateCardIds = false;
-const saveToDb = false;
+const populateGuardianPhones = true;
+const populateCardIds = true;
+const saveToDb = true;
 const fileOutput = true;
 
 
@@ -35,17 +35,8 @@ const fileOutput = true;
     populateGuardianPhoneNumbers(youthParticipants)
 
 
-  if (set.saveToDb) {
-    Leaders = youthParticipants.filter(p => p.Group_Leader);
-    youthParticipants = youthParticipants.map(mapLeader);
-    youthParticipants = youthParticipants.filter(groupRegistrations);
-
-    console.log(youthParticipants.length, 'saveToDb youthParticipants');
-
-    const bulkContacts = await contactToBulkTextFormat(youthParticipants, eventName);  // MP Contact Format
-    saveAttendees(bulkContacts);
-    saveDevAttendees();
-  }
+  if (set.saveToDb)
+    saveParticipantsToDb(youthParticipants);
 
 
   if (set.fileOutput) {
@@ -53,7 +44,7 @@ const fileOutput = true;
     // fs.writeFileSync('src/data/youthParticipants.csv', await json2csv(youthParticipants, { emptyFieldValue: '' }));
   }
 
-  
+
 
 })({ populateGuardianPhones, populateCardIds, saveToDb, fileOutput })
 
@@ -69,10 +60,25 @@ async function populateGuardianPhoneNumbers(youthParticipants: YouthWeekParticip
 }
 
 
+async function saveParticipantsToDb(youthParticipants: YouthWeekParticipant[]) {
+  Leaders = youthParticipants.filter(p => p.Group_Leader);
+  youthParticipants = youthParticipants
+    .map(mapLeader)
+    .filter(groupRegistrations)
+    .filter(p => p.ID_Card !== null);
+
+  console.log(youthParticipants.length, 'saveToDb youthParticipants');
+
+  const bulkContacts = await contactToBulkTextFormat(youthParticipants, eventName);  // MP Contact Format
+  saveAttendees(bulkContacts);
+  saveDevAttendees();
+}
+
+
 async function loadEventParticipants() {
 
   let eventParticipants: EventParticipant[] = (await getYouthParticipants(eventId))
-  .map(p => ({...p, ...{ Notes: '{}'}}));
+  // .map(p => ({...p, ...{ Notes: '{}'}}));
   let eventContacts = await removeDuplicates(eventParticipants as EventContact[]);
   // - eventContacts = contacts.filter(contact => !!contact.First_Name)  // Checked in locally but didn't submit form.
   return eventContacts;
@@ -96,7 +102,8 @@ function mapGuardianInfo(participant: EventContact): YouthWeekParticipant {
     var Form = 'Dynamic';
   }
 
-  // participant.Notes = ''
+  participant.Notes = ''
+  Type = Type.replace('registrant', 'adult') as YouthWeekRegistrationInfo['detail'];
   const Phone_Number = parsePhoneNumber(Adult_Phone, 'US');
   // if (!Phone_Number && Type != 'registrant') console.log(participant.Contact_ID, Type)
   if (isUs(Phone_Number)) Adult_Phone = formatNumber(Phone_Number!.nationalNumber);
@@ -137,7 +144,7 @@ function isYouth(participant: YouthWeekParticipant) {
 }
 
 function isRegistrant(participant: YouthWeekParticipant) {
-  return participant.Type == 'adult' || participant.Type == 'registrant';
+  return participant.Type == 'adult';
 }
 
 function groupRegistrations(participant: YouthWeekParticipant) {
