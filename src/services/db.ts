@@ -17,6 +17,7 @@ const attendeeSchema = new Schema<BulkAttendee>({
   barcode: String,
   fam: Boolean,
   onMp: Boolean,
+  type: { type: String, required: false },
   sentEmail: { type: Boolean, default: false },
   sentText: { type: Boolean, default: false },
   textError: String,
@@ -25,7 +26,7 @@ const attendeeSchema = new Schema<BulkAttendee>({
 
 const BulkAttendeeModel = model<BulkAttendee>('Attendee', attendeeSchema);
 
-(async function connectDB() {
+async function connectDB() {
 
   db = await connect(dbUrl)
     .then(db => db)
@@ -37,7 +38,7 @@ const BulkAttendeeModel = model<BulkAttendee>('Attendee', attendeeSchema);
   if (db) console.log('🔗', 'connected to MongoDB:', db.connection.name);
 
   dbInitiated = true;
-})()
+  }
 
 export async function saveAttendee(attendee: BulkAttendee) {
   const doc: HydratedDocument<BulkAttendee> = new BulkAttendeeModel(attendee);
@@ -56,6 +57,8 @@ export async function getAttendees(filter: FilterQuery<BulkAttendee>): Promise<B
 }
 
 export async function saveAttendees(attendees: BulkAttendee[]) {
+
+  if (!db) connectDB();
 
   if (!(await awaitDbInit('saveAttendees'))) return;
 

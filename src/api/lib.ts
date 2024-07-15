@@ -10,7 +10,6 @@ interface UpdateOptions {
 export class Lib {
 
   static async updateCardIds(contacts: (EventContact | CarShowContact | Contact)[], { prefix, onlyBlanks = true }: UpdateOptions): Promise<void> {
-    // export async function updateCardIds(contacts: EventContact[], {prefix, onlyBlanks}: UpdateOptions): Promise<void> {
 
     if (onlyBlanks) {
       contacts = contacts.filter(c => c.ID_Card === null)

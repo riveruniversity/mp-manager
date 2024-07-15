@@ -133,15 +133,18 @@ export function getEventParticipants(eid: number): Promise<EventParticipant[]> {
 
 
 
-export function getYouthParticipants(eid: number): Promise<EventParticipant[]> {
+export async function getYouthParticipants(eid: number): Promise<EventParticipant[]> {
   
   const table = `Event_Participants`
-  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}, Event_Participants.Group_ID, Event_Participants.Notes, Group_ID_Table.Group_Name, ${P.Member_Status}, Event_Participants._Setup_Date` 
+  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}, Event_Participants.Group_ID, Event_Participants.Notes, Group_ID_Table.Group_Name, ${P.Member_Status}, Event_Participants._Setup_Date As [Registered_At], ${C.Created_Date}` 
   const filter = `&$filter=Event_ID=${eid} AND Event_Participants.Participation_Status_ID <> 5 ` //
   // AND ${Signed_Waiver}  AND Attending_Online='false' || AND Participant_ID_Table_Contact_ID_Table.ID_Card NOT Like 'C%'  || 5=Cancelled ||  AND Event_Participants.Notes Is Not null || AND Mobile_Phone is null
-  const top = `&$top=20000`
+  const top = `&$top=20000`;
 
-  return request(table, { method: 'get', select, filter, top })
+  const eventParticipants = await request(table, { method: 'get', select, filter, top })
+  console.log(eventParticipants.length, 'event participants');
+
+  return eventParticipants
 }
 //: ........................................................
 
@@ -247,6 +250,7 @@ export const C = {
   Mobile_Phone: `Participant_ID_Table_Contact_ID_Table.Mobile_Phone`,
   Email_Address: `Participant_ID_Table_Contact_ID_Table.Email_Address`,
   Image: `Participant_ID_Table_Contact_ID_Table.dp_fileUniqueId Image`,
+  Created_Date: `Participant_ID_Table_Contact_ID_Table._Contact_Setup_Date`,
   Household_Position_ID: `Participant_ID_Table_Contact_ID_Table.Household_Position_ID`
   
 }

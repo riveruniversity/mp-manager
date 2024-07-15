@@ -45,7 +45,7 @@ export async function attendeeToBulkTextFormat(attendees: Attendee[], eventName:
 
 
 export function joinParticipantInfo(formResponses: EventFormResponse[], eventParticipants: EventParticipant[]): EventContact[] {
-  const eventContacts: EventContact[] = formResponses.map((response: EventFormResponse) => ({ ...response, ...eventParticipants.find((participant: EventParticipant) => participant.Contact_ID === response.Contact_ID)! }))
+  const eventContacts: EventContact[] | any = formResponses.map((response: EventFormResponse) => ({ ...response, ...eventParticipants.find((participant: EventParticipant) => participant.Contact_ID === response.Contact_ID)! }))
   return eventContacts
     .map(Lib.trimData)
     .map(Lib.fixValues)

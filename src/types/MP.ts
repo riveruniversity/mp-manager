@@ -62,6 +62,7 @@ export interface YouthWeekParticipant extends EventParticipant, Contact {
   Registration_Info: YouthWeekRegistrationInfo;
   Group_Leader: boolean;
   Church_Group?: boolean;
+  Leader?: number | null;
 }
 
 export interface YouthWeekRegistrationInfo {
@@ -138,6 +139,7 @@ export interface BulkAttendee {
   fam?: boolean;
   file?: string;
   onMp?: boolean;
+  type?: 'adult' | 'kids' | 'youth';
 
   url?: string;
 

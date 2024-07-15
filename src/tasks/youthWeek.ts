@@ -10,76 +10,73 @@ import { Lib } from '../api/lib';
 import { contactToBulkTextFormat } from '../services/converters';
 import { saveAttendees, saveDevAttendees } from '../services/db';
 
-import { fixNumber, getKeyByValue } from '../utils';
+import { formatNumber, getKeyByValue } from '../utils';
 
 // >>> Settings
 const eventId = events.youthWeek;
 const eventName: string = getKeyByValue(events, eventId) || '';
 
+const populateGuardianPhones = false;
+const populateCardIds = false;
+const saveToDb = false;
+const fileOutput = true;
 
-populateGuardianPhoneNumbers();
-// getAllParticipants();
 
-var Leaders: YouthWeekParticipant[] = [];
-
-async function getAllParticipants() {
+(async function getAllParticipants(set: Settings) {
   let eventParticipants: EventContact[] = await loadEventParticipants() as EventContact[];
-  let youthParticipants: YouthWeekParticipant[] = eventParticipants.map(mapGuardianInfo);
-  Leaders = youthParticipants.filter(p => p.Group_Leader);
-  youthParticipants = youthParticipants.map(mapLeader);
-  youthParticipants = youthParticipants.filter(groupRegistrations);
-  console.log(youthParticipants.length, 'youthParticipant');
-  fs.writeFileSync('src/data/youthParticipant.json', JSON.stringify(youthParticipants, null, '\t'));
-  // fs.writeFileSync('src/data/youngContacts.csv', await json2csv(youngContacts, { emptyFieldValue: '' }));
+  let youthParticipants: YouthWeekParticipant[] = eventParticipants.map(mapGuardianInfo); // .filter(onlyUs) // .filter(onlyInt)
 
 
-  // const bulkContacts = await contactToBulkTextFormat(youthParticipants, eventName);  // MP Contact Format
-  // saveAttendees(bulkContacts);
-  // saveDevAttendees();
-}
-
-async function populateGuardianPhoneNumbers() {
-  let eventParticipants: EventContact[] = await loadEventParticipants() as EventContact[];
-  let youngContacts: YouthWeekParticipant[] = eventParticipants.map(mapGuardianInfo)
-  // .filter(participant => participant.Type == 'youth' || participant.Type == 'kids')
-  // .filter(onlyUs)
-  // .filter(onlyInt)
-
-  console.log(youngContacts.length, 'youngContacts');
-  // fs.writeFileSync('src/data/youngContacts.json', JSON.stringify(youngContacts, null, '\t'));
-  // fs.writeFileSync('src/data/youngContacts.csv', await json2csv(youngContacts, { emptyFieldValue: '' }));
+  if (set.populateCardIds)
+    Lib.updateCardIds(youthParticipants, { prefix: 'C', onlyBlanks: true });
 
 
-  // updateMobilePhone(youngContacts);
-}
+  if (set.populateGuardianPhones)
+    populateGuardianPhoneNumbers(youthParticipants)
 
-function updateMobilePhone(youngContacts: YouthWeekParticipant[]) {
-  const updateFields = youngContacts.map(({ Contact_ID, Adult_Phone }) => ({ Contact_ID, Mobile_Phone: Adult_Phone }));
-  console.log(updateFields.length, 'updateMobilePhone');
+
+  if (set.saveToDb) {
+    Leaders = youthParticipants.filter(p => p.Group_Leader);
+    youthParticipants = youthParticipants.map(mapLeader);
+    youthParticipants = youthParticipants.filter(groupRegistrations);
+
+    console.log(youthParticipants.length, 'saveToDb youthParticipants');
+
+    const bulkContacts = await contactToBulkTextFormat(youthParticipants, eventName);  // MP Contact Format
+    saveAttendees(bulkContacts);
+    saveDevAttendees();
+  }
+
+
+  if (set.fileOutput) {
+    fs.writeFileSync('src/data/youthParticipant.json', JSON.stringify(youthParticipants, null, '\t'));
+    // fs.writeFileSync('src/data/youthParticipants.csv', await json2csv(youthParticipants, { emptyFieldValue: '' }));
+  }
+
+  
+
+})({ populateGuardianPhones, populateCardIds, saveToDb, fileOutput })
+
+
+async function populateGuardianPhoneNumbers(youthParticipants: YouthWeekParticipant[]) {
+  const updateFields = youthParticipants
+    .filter(p => p.Type == 'youth' || p.Type == 'kids')
+    .filter(p => p.Mobile_Phone == null)
+    .map(({ Contact_ID, Adult_Phone }) => ({ Contact_ID, Mobile_Phone: Adult_Phone }));
+
+  console.log(updateFields.length, 'Updating Contacts: Mobile_Phone');
   updateFields.length && updateContacts(updateFields);
 }
 
 
-
 async function loadEventParticipants() {
 
-  let eventParticipants: EventParticipant[] = await getYouthParticipants(eventId);
-  console.log(eventParticipants.length, 'event participants');
-
+  let eventParticipants: EventParticipant[] = (await getYouthParticipants(eventId))
+  .map(p => ({...p, ...{ Notes: '{}'}}));
   let eventContacts = await removeDuplicates(eventParticipants as EventContact[]);
-
-
-  // - eventContacts = await removeNonWaiverSigned(contacts)             // only form responses are included, therefore all contacts signed the waiver
   // - eventContacts = contacts.filter(contact => !!contact.First_Name)  // Checked in locally but didn't submit form.
-
-  // fs.writeFileSync('src/data/eventParticipants.json', JSON.stringify(eventContacts, null, '\t'));
-  // fs.writeFileSync('src/data/eventParticipants.csv', await json2csv(eventContacts, { emptyFieldValue: '' }));
-
-  // Lib.updateCardIds(eventContacts, {prefix: 'C', onlyBlanks: true});
-
   return eventContacts;
 }
-
 
 
 function mapGuardianInfo(participant: EventContact): YouthWeekParticipant {
@@ -89,7 +86,6 @@ function mapGuardianInfo(participant: EventContact): YouthWeekParticipant {
   if (participant.Notes.match(/Parent Phone/)) {
     var Registration_Info = {} as YouthWeekRegistrationInfo;
     var Adult_Phone = participant.Notes.match(phoneRegex)?.at(0) || participant.Mobile_Phone || ''; // ?.replaceAll(/\D/g, '') // remove non-digits doesn't work good, it removes the + prefix
-    // console.log('participant.Notes.match(phoneRegex)', participant.Notes)
     var Type = participant.Group_ID && youthWeek[participant.Group_ID as keyof typeof youthWeek] as unknown as YouthWeekRegistrationInfo['detail'] || '_';
     var Form = 'Old';
   }
@@ -100,22 +96,23 @@ function mapGuardianInfo(participant: EventContact): YouthWeekParticipant {
     var Form = 'Dynamic';
   }
 
-  participant.Notes = ''
+  // participant.Notes = ''
   const Phone_Number = parsePhoneNumber(Adult_Phone, 'US');
   // if (!Phone_Number && Type != 'registrant') console.log(participant.Contact_ID, Type)
-  if (isUs(Phone_Number)) Adult_Phone = fixNumber(Phone_Number?.nationalNumber);
+  if (isUs(Phone_Number)) Adult_Phone = formatNumber(Phone_Number!.nationalNumber);
   const Group_Leader = !!Registration_Info.type?.includes('Leader');
 
   return { ...participant, Adult_Phone, Phone_Number, Form, Type, Registration_Info, Group_Leader }
 }
 
 
+var Leaders: YouthWeekParticipant[] = [];
+
 function mapLeader(participant: YouthWeekParticipant): YouthWeekParticipant {
 
-  var Leader = isYouth(participant) &&
-    Leaders.find(leader => isRegistrant(leader) && participant.Phone_Number?.nationalNumber == leader.Phone_Number?.nationalNumber);
-
-  return { ...participant, Church_Group: !!Leader }
+  var Leader = (isYouth(participant) &&
+    Leaders.find(leader => isRegistrant(leader) && leader.Phone_Number?.nationalNumber == participant.Phone_Number?.nationalNumber)?.Contact_ID) || null;
+  return { ...participant, Church_Group: !!Leader, Leader }
 }
 
 
@@ -145,4 +142,12 @@ function isRegistrant(participant: YouthWeekParticipant) {
 
 function groupRegistrations(participant: YouthWeekParticipant) {
   return !participant.Group_Leader && !participant.Church_Group;
+}
+
+
+interface Settings {
+  populateGuardianPhones: boolean;
+  populateCardIds: boolean;
+  saveToDb: boolean;
+  fileOutput: boolean;
 }
