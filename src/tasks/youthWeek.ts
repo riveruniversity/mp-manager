@@ -16,37 +16,32 @@ import { formatNumber, getKeyByValue } from '../utils';
 const eventId = events.youthWeek;
 const eventName: string = getKeyByValue(events, eventId) || '';
 
-const populateGuardianPhones = true;
-const populateCardIds = true;
-const saveToDb = true;
-const fileOutput = true;
+const populateGuardianPhones = false;
+const populateCardIds = false;
+const saveToDb = false;
 
 
 (async function getAllParticipants(set: Settings) {
   let eventParticipants: EventContact[] = await loadEventParticipants() as EventContact[];
   let youthParticipants: YouthWeekParticipant[] = eventParticipants.map(mapGuardianInfo); // .filter(onlyUs) // .filter(onlyInt)
-
+  youthParticipants = youthParticipants.filter(p => !!p.Time_In)
 
   if (set.populateCardIds)
-    Lib.updateCardIds(youthParticipants, { prefix: 'C', onlyBlanks: true });
+    return Lib.updateCardIds(youthParticipants, { prefix: 'C', onlyBlanks: true });
 
 
   if (set.populateGuardianPhones)
     populateGuardianPhoneNumbers(youthParticipants)
 
 
-  if (set.saveToDb)
+  if (set.saveToDb && !set.populateCardIds && !set.populateGuardianPhones)
     saveParticipantsToDb(youthParticipants);
 
 
-  if (set.fileOutput) {
-    fs.writeFileSync('src/data/youthParticipant.json', JSON.stringify(youthParticipants, null, '\t'));
-    // fs.writeFileSync('src/data/youthParticipants.csv', await json2csv(youthParticipants, { emptyFieldValue: '' }));
-  }
+  fs.writeFileSync('src/data/youthParticipant.json', JSON.stringify(youthParticipants, null, '\t'));
+  // fs.writeFileSync('src/data/youthParticipants.csv', await json2csv(youthParticipants, { emptyFieldValue: '' }));
 
-
-
-})({ populateGuardianPhones, populateCardIds, saveToDb, fileOutput })
+})({ populateGuardianPhones, populateCardIds, saveToDb })
 
 
 async function populateGuardianPhoneNumbers(youthParticipants: YouthWeekParticipant[]) {
@@ -62,8 +57,7 @@ async function populateGuardianPhoneNumbers(youthParticipants: YouthWeekParticip
 
 async function saveParticipantsToDb(youthParticipants: YouthWeekParticipant[]) {
   Leaders = youthParticipants.filter(p => p.Group_Leader);
-  youthParticipants = youthParticipants
-    .map(mapLeader)
+  youthParticipants = youthParticipants.map(mapLeader)
     .filter(groupRegistrations)
     .filter(p => p.ID_Card !== null);
 
@@ -156,5 +150,4 @@ interface Settings {
   populateGuardianPhones: boolean;
   populateCardIds: boolean;
   saveToDb: boolean;
-  fileOutput: boolean;
 }

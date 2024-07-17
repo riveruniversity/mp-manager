@@ -51,6 +51,7 @@ export interface EventParticipant {
   Participant_ID: number,
   Participation_Status_ID: number,
   Notes: string;
+  Time_In: string | null;
   // Phone_Number: string;
 }
 
@@ -63,6 +64,7 @@ export interface YouthWeekParticipant extends EventParticipant, Contact {
   Group_Leader: boolean;
   Church_Group?: boolean;
   Leader?: number | null;
+
 }
 
 export interface YouthWeekRegistrationInfo {
