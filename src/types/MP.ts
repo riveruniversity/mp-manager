@@ -40,7 +40,6 @@ export interface GroupContact {
   Img: Buffer;
 }
 
-
 export interface EventParticipant {
   Contact_ID: number;
   ID_Card: string | null;
@@ -54,29 +53,6 @@ export interface EventParticipant {
   Time_In: string | null;
   // Phone_Number: string;
 }
-
-export interface YouthWeekParticipant extends EventParticipant, Contact {
-  Adult_Phone: string; // extracted from Participant.Notes
-  Phone_Number: PhoneNumber | undefined;
-  Type: YouthWeekRegistrationInfo['detail'];
-  Form: string;
-  Registration_Info: YouthWeekRegistrationInfo;
-  Group_Leader: boolean;
-  Church_Group?: boolean;
-  Leader?: number | null;
-
-}
-
-export interface YouthWeekRegistrationInfo {
-  detail: 'adult' | 'youth' | 'kids' | '_'; //  'adult' if not using the dynamic form
-  adult?: YouthWeekAdult;
-  emergencyContact: YouthWeekEmergencyContact;
-  type?: string;
-  churchOrGroup?: YouthWeekChurch;
-	qrCodePhone?: string;
-}
-
-
 
 export interface EventFormResponse {
   // Form Response
@@ -109,6 +85,27 @@ export interface CarShowContact {
 }
 
 
+
+export interface YouthWeekParticipant extends EventParticipant, Contact {
+  Adult_Phone: string; // extracted from Participant.Notes
+  Phone_Number: PhoneNumber | undefined;
+  Type: YouthWeekRegistrationInfo['detail'];
+  Form: string;
+  Registration_Info: YouthWeekRegistrationInfo;
+  Group_Leader: boolean;
+  Church_Group?: boolean;
+  Leader?: number | null;
+
+}
+
+export interface YouthWeekRegistrationInfo {
+  detail: 'adult' | 'youth' | 'kids' | '_'; //  'adult' if not using the dynamic form
+  adult?: YouthWeekAdult;
+  emergencyContact: YouthWeekEmergencyContact;
+  type?: string;
+  churchOrGroup?: YouthWeekChurch;
+	qrCodePhone?: string;
+}
 
 
 interface YouthWeekEmergencyContact {

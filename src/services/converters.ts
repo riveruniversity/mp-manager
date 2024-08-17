@@ -6,7 +6,7 @@ import { CarShowContact, EventContact, EventParticipant, EventFormResponse, Bulk
 import { Attendee } from '../types/Eventbrite';
 
 // Contact[] | CarShowContact[] | EventContact[] | YouthWeekParticipant[]
-export async function contactToBulkTextFormat(contacts: YouthWeekParticipant[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
+export async function contactToBulkTextFormat(contacts: Contact[] | CarShowContact[] | EventContact[] | YouthWeekParticipant[], eventName: string, fileName: string = 'onMp'): Promise<BulkAttendee[]> {
 
   const bulkContacts: BulkAttendee[] = contacts.map((att, i) => ({
     first: att.Nickname || att.First_Name, 
@@ -16,7 +16,7 @@ export async function contactToBulkTextFormat(contacts: YouthWeekParticipant[], 
     barcode: att.ID_Card || 'C' + att.Contact_ID, 
     onMp: true, 
     fam: i > 0 && att.Mobile_Phone === contacts[i - 1].Mobile_Phone,
-    type: att.Type
+    // type: att.Type NEEDED FOR YOUTH WEEK
   }))
 
   fs.writeFileSync(`src/data/${eventName}_${fileName}.json`, JSON.stringify(bulkContacts, null, '\t'));

@@ -13,14 +13,14 @@ import { getAttendees } from '../api/eventbrite';
 
 // used to save json files
 const eventName: string = 'carShow';
-const eventbriteId: number = 905321108807;
+const eventbriteId: number = 934713893417;
 
 (async function findMPRecord() {
-  
+
   var found: Contact[] = [];
   var removed: Contact[] = [];
   var notFound: Attendee[] = [];
-  
+
   const people: Attendee[] = await getAttendees(eventbriteId);
   console.log('🔍', people.length, 'searching people ...');
 
@@ -60,24 +60,24 @@ const eventbriteId: number = 905321108807;
 
   console.log('✅', found.length, 'people found on MP');
   console.log('❌', notFound.length, 'people not found on MP');
-  
+
   // console.log(removed.length , ' people found by phone or email but first name didn\'t match');
 
   found = await removeDuplicates(found as unknown as EventContact[], false) as unknown as Contact[];
 
   // Don't save contacts if not all have a card_id / barcode
   if (found.some(c => c.ID_Card === null)) return Lib.updateCardIds(found, { prefix: 'C', onlyBlanks: true });
-  
+
   const bulkContacts = await contactToBulkTextFormat(found, eventName);  // MP Contact Format
   saveAttendees(bulkContacts);
 
   const bulkAttendees = await attendeeToBulkTextFormat(notFound, eventName); // CSV (Eventbrite) Format
   saveAttendees(bulkAttendees);
-  
+
   // saveDevAttendees();
 })()
 
-function mergeContact(filtered: Contact[], person: Attendee ) {
+function mergeContact(filtered: Contact[], person: Attendee) {
   const merged: Contact = {
     ...filtered[0],
     Email_Address: filtered[0].Email_Address || person.Email_Address || '',
