@@ -1,0 +1,218 @@
+import { Contact, MPCreateOptions, MPGetOptions, MPUpdateOptions } from "mp-api";
+import { groupArrayBy } from "../../utils";
+import { mp } from "./api";
+
+
+export async function getContactDetails(filter: string): Promise<Contact[]> {
+
+  const select = `Contacts.Contact_ID, Contacts.ID_Card, Contacts.First_Name, Contacts.Last_Name, Contacts.Display_Name, Contacts.Nickname, Contacts.Email_Address, Contacts.Mobile_Phone, Contacts.Date_of_Birth, Gender_ID_Table.Gender, Participant_Record_Table_Member_Status_ID_Table.Member_Status, Contacts.Household_ID, Household_ID_Table.Household_Name, Contacts.Household_Position_ID, Household_Position_ID_Table.Household_Position, Contacts.Marital_Status_ID, Marital_Status_ID_Table.Marital_Status, Participant_Record_Table.Participant_ID, Participant_Record_Table_Participant_Engagement_ID_Table.Engagement_Level, Contact_Status_ID_Table.Contact_Status, Participant_Record_Table.Notes, Participant_Record_Table.Red_Flag_Notes, dp_fileUniqueId as Image_ID`;
+  const top = undefined;
+  filter = `${filter} `;
+
+  const res = await mp.getContacts({ select, filter, top });
+
+  return 'error' in res ? [] : res;
+}
+
+
+export async function findPerson(person: Partial<Contact>): Promise<Contact | null> {
+
+  var found: Contact | null = null;
+  var removed: Partial<Contact>[] = [];
+  var duplicates: Contact[] = [];
+  var results: Contact[] | { error: any; } = [];
+
+
+  if (person.firstName || person.lastName) {
+    let filter = `(CONCAT(Contacts.First_Name, Contacts.Nickname) LIKE '%${person.firstName}%' AND Contacts.Last_Name LIKE '%${person.lastName}%')`;
+    if (person.nickname) filter += ` OR (CONCAT(Contacts.First_Name, Contacts.Nickname) LIKE '%${person.nickname}%' AND Contacts.Last_Name LIKE '%${person.lastName}%')`;
+    results = await mp.getContacts({ filter });
+  }
+
+  if (!('error' in results) && results?.length) {
+    console.log('✅', person.mobilePhone + ': ' + person.firstName + ' ' + person.lastName, ': found by name 🪧');
+  }
+  else {
+    if (person.mobilePhone)
+      results = await mp.getContacts({ filter: `Contacts.mobilePhone='${formatNumber(person.mobilePhone)}'` });
+
+    if (!('error' in results) && results?.length) {
+      console.log('✅', person.mobilePhone + ': ' + person.firstName + ' ' + person.lastName, ': found by phone ☎️', results.length);
+    }
+    else if (person.emailAddress) {
+      results = await mp.getContacts({ filter: `Contacts.Email_Address='${person.emailAddress}'` });
+      if (!('error' in results) && results?.length) {
+        console.log('✅', person.mobilePhone + ': ' + person.firstName + ' ' + person.lastName, ': found by email 📧', results.length);
+      }
+    }
+  }
+
+  if (!('error' in results) && results?.length) {
+
+    if (results.length === 1)
+      found = results.shift() || null;
+    else {
+      const filtered = Filter.byName(results, person);
+
+      if (filtered.length == 1) {
+        found = filtered.shift() || null;
+      }
+      else if (filtered.length > 1) {
+        let [unique, dubs] = Filter.splitDuplicates(filtered);
+        found = unique;
+        duplicates = dubs;
+      }
+      else
+        removed = results;
+    }
+  }
+  else
+    console.log('❌', person.firstName + ' ' + person.lastName, ' not found ');
+
+
+  if (duplicates.length)
+    console.log('⏭️ ', duplicates.length, ' duplicates found and skipped', duplicates);
+  if (removed.length)
+    console.log('🎭 ', removed.length, ' found by phone, email or last name', `but first name didn't match`, removed);
+
+  return found;
+}
+
+
+
+function fixNumber(num: string | null | undefined, { addDashes } = { addDashes: true }) {
+
+  if (!num) return '';
+
+  const cleaned = String(num).trim()
+    .replace(/(?<!^)\+|[^\d+]+/g, '')  // Remove non digits and keep the +
+    .replace(/^00/, '+')               // Remove preceding '00'
+    .replace(/^\+?1(?=\d{10})/, '');    // Remove preceding '+1' or '1' for American numbers     
+
+
+  if (cleaned.length == 10) {
+    if (addDashes)
+      return cleaned.replace(/^(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+    else
+      return cleaned;
+  }
+  else if (cleaned.includes('+')) {
+    return '';
+  }
+  else {
+    return '';
+  }
+}
+
+
+function formatNumber(num: string) {
+
+  if (!num) return '';
+
+  const cleaned = String(num).trim()
+    .replace(/(?<!^)\+|[^\d+]+/g, '')  // Remove non digits and keep the +
+    .replace(/^00/, '+')               // Remove preceding '00'
+    .replace(/^\+?1(?=\d{10})/, '');    // Remove preceding '+1' or '1' for American numbers     
+
+  return cleaned.replace(/^(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+}
+
+function trimString(val: any) {
+  if (typeof val === 'string') return val.trim().replaceAll('  ', ' ');
+  else return val;
+}
+
+
+
+
+
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ RESULT FILTER ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+const Filter = {
+
+
+  byName(response: Contact[], person: Partial<Contact>) {
+    const lower = (name: string | null | undefined) => name?.toLowerCase().split(' ').shift();
+    const firstName = lower(person.firstName);
+    const lastName = lower(person.lastName);
+    const nickName = lower(person.nickname);
+    return response.filter(r =>
+      (lower(r.firstName)?.includes(firstName || '') || firstName?.includes(lower(r.firstName) || '') || lower(r.nickname || '') == nickName) &&
+      (lower(r.lastName)?.includes(lastName || '') || lastName?.includes(lower(r.lastName) || ''))
+    );
+    // remove last name to get more results (but is less accurate)
+  },
+
+  // Remove duplicates where first name, email (and phone) are the same
+  splitDuplicates(person: Contact[], saveDuplicates = true): [Contact | null, Contact[]] {
+    // console.log(contacts.length, 'with duplicates')
+
+    let unique: Contact | null;
+    let duplicates: Contact[] = [];
+
+    // remove duplicates by id
+    let groupedContacts = groupArrayBy<Contact>(person, 'contactID');
+    person = groupedContacts.map((contacts) => contacts[0]);
+
+    if(person.length === 1) return [person[0], duplicates];
+
+    // remove duplicates by email address
+    groupedContacts = groupArrayBy<Contact>(person, 'emailAddress');
+    person = groupedContacts.reduce((acc: Contact[], contacts: Contact[]) => {
+
+      if (contacts.length === 1) acc = [...acc, ...contacts];
+      else {
+        const groupedByName = groupArrayBy<Contact>(contacts, "firstName");
+        const filtered: Contact[] = groupedByName.reduce((accName: Contact[], current: Contact[]) => {
+          if (!current.length)
+            return acc;
+          else if (current.length == 1)
+            return [...accName, ...current];
+          else {
+            let first = current.shift()!;
+            duplicates = duplicates.concat(current);
+            return [...accName, first];
+          }
+        }, []);
+
+        acc = [...acc, ...filtered];
+      }
+
+      return acc;
+    }, []);
+
+    
+    if(person.length === 1) return [person[0], duplicates];
+
+
+    // remove duplicates by phone #
+    groupedContacts = groupArrayBy<Contact>(person, 'mobilePhone');
+    person = groupedContacts.reduce((acc: Contact[], contacts: Contact[], i) => {
+      if (contacts.length === 1) acc = [...acc, ...contacts];
+      else {
+        const groupedByName = groupArrayBy<Contact>(contacts, "firstName");
+        const filtered: Contact[] = groupedByName.reduce((accName: Contact[], current: Contact[]) => {
+          if (!current.length)
+            return acc;
+          else if (current.length == 1)
+            return [...accName, ...current];
+          else {
+            let first = current.shift()!;
+            duplicates = duplicates.concat(current);
+            return [...accName, first];
+          }
+
+        }, []);
+
+        acc = [...acc, ...filtered];
+      }
+
+      return acc;
+    }, []);
+
+    unique = person.shift() || null;
+    if (person.length) duplicates.concat(duplicates, person);
+
+    return [unique, duplicates];
+  }
+};

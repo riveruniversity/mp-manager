@@ -1,6 +1,6 @@
 import { getEventParticipants, getFormResponses } from '../api/mp'
 import { removeDuplicates, removeGroupRegistrations, removeOnline, removeStaff } from '../services/filters';
-import { EventContact, EventFormResponse, EventParticipant } from '../types/MP';
+import { EventContact, FormResponseRecord, EventParticipant } from '../types/MP';
 import { events } from '../config/vars'
 import { Lib } from '../api/lib';
 import { findDuplicates, insertValues } from '../services/sql';
@@ -21,7 +21,7 @@ const eventId = events.youthWeek;
 (async function createEventParticipants() {
   
   let eventParticipants: EventParticipant[]  = (await getEventParticipants(eventId)); 
-  let formResponses: EventFormResponse[] = (await getFormResponses(eventId));
+  let formResponses: FormResponseRecord[] = (await getFormResponses(eventId));
 
   console.log(eventParticipants.length, 'event participants')
   console.log(formResponses.length, 'event form responses')

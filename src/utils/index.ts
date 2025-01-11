@@ -122,13 +122,14 @@ export function join(arr1: any[], arr2: any[]) {
   return arr1.map(participant => ({ ...participant, ...arr2.find(response => response.Contact_ID === participant.Contact_ID)! }))
 }
 
-export async function showPercent(i: string, arr: GroupContact[]): Promise<void> {
+export async function showPercent<T>(i: string, arr: T[], logKey: keyof T): Promise<void> {
   const percent: string = ((+i + 1) / arr.length * 100).toFixed(1)
-  console.log('🔔', `${+i + 1} (${percent}%)`, arr[+i].Contact_ID);
+  console.log('🔔', `${+i + 1} (${percent}%)`, arr[+i][logKey]);
 }
 
 
-export function formatPhone(phone: string | number): string {
+export function formatPhone(phone?: string | number | null): string {
+  if(!phone) return ''
   return String(phone).replace(/^(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
 }
 

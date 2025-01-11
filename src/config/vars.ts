@@ -18,7 +18,7 @@ export const events = {
   christmasChild: 69617,
   mlcShout: 69536,
   easterFest: 69855
-}
+};
 
 
 
@@ -30,7 +30,7 @@ export const group = {
   waiver: 500,
   waiver2023: 530,
   trespassed: 527
-}
+};
 
 export const youthWeek = {
   groupRegistrations: 542,
@@ -40,4 +40,5 @@ export const youthWeek = {
   545: 'kids',
   546: 'youth',
   547: 'adult'
-}
+};
+

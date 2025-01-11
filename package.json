@@ -8,18 +8,22 @@
   "keywords": [],
   "scripts": {
     "start": "nodemon",
+    "api-test": "npx nodemon src/tasks/api-test.ts",
     "sql": "npx nodemon src/services/sql.ts",
     "clean": "npx nodemon src/tasks/db.clean.ts",
     "badge": "npx nodemon src/tasks/badges.ts --ext ts",
     "find": "npx nodemon src/tasks/find.ts  --ext ts",
     "download": "npx nodemon src/tasks/download.ts  --ext ts",
     "event": "npx nodemon src/tasks/event.ts  --ext ts",
+    "misc": "npx nodemon src/tasks/misc.ts  --ext ts",
     "youthWeek": "npx nodemon src/tasks/youthWeek.ts  --ext ts",
+    "christmas": "npx nodemon src/tasks/z-christmas.ts  --ext ts",
     "eventbrite": "npx nodemon src/api/eventbrite.ts",
     "populate": "npx nodemon src/tasks/populate.ts  --ext ts",
     "event_": "npx node build/tasks/event.js"
   },
   "dependencies": {
+    "@types/luxon": "^3.4.2",
     "axios": "^1.6.7",
     "csvtojson": "^2.0.10",
     "dotenv": "^16.0.3",
@@ -27,7 +31,9 @@
     "json-2-csv": "^5.5.1",
     "libphonenumber-js": "^1.11.4",
     "mongoose": "^8.2.1",
+    "mp-api": "link:..\\..\\RMI\\mp-api",
     "sql.js": "^1.8.0",
+    "uuid": "^11.0.3",
     "xregexp": "^5.1.1"
   },
   "devDependencies": {

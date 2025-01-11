@@ -9,7 +9,7 @@ interface UpdateOptions {
 
 export class Lib {
 
-  static async updateCardIds(contacts: (EventContact | CarShowContact | Contact)[], { prefix, onlyBlanks = true }: UpdateOptions): Promise<void> {
+  static async updateCardIds(contacts: (EventContact | CarShowContact | Contact | GroupContact)[], { prefix, onlyBlanks = true }: UpdateOptions): Promise<void> {
 
     if (onlyBlanks) {
       contacts = contacts.filter(c => c.ID_Card === null)
@@ -34,8 +34,8 @@ export class Lib {
   static fixValues(eventContact: EventContact): EventContact {
     return {
       ...eventContact,
-      ...{ First_Name: cleanName(eventContact.First_Name) },
-      ...{ Last_Name: cleanName(eventContact.Last_Name) },
+      ...{ First_Name: cleanName(eventContact.First_Name || '') },
+      ...{ Last_Name: cleanName(eventContact.Last_Name || '') },
       ...{ Mobile_Phone: fixNumber(eventContact.Mobile_Phone) },
     }
   }

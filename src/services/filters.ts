@@ -2,10 +2,12 @@ import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
-import { Contact, EventContact, GroupContact } from "../types/MP";
+import { EventContact, FestParticipant, GroupContact } from "../types/MP";
 import { Attendee } from "../types/Eventbrite";
 import { group, youthWeek } from '../config/vars'
-import { groupArrayBy } from "../utils";
+import { groupArrayBy } from '../utils';
+import { Contact } from 'mp-api';
+import { CreatePersonParams } from './mp/create';
 
 
 export function noStaff(contacts: GroupContact[]) {
@@ -43,7 +45,7 @@ export async function removeAdults(contacts: EventContact[]): Promise<EventConta
 }
 
 
-export async function removeDuplicatesById<T>(contacts: T[], saveDuplicates = true): Promise<T[]> {
+export function removeDuplicatesById<T>(contacts: T[], saveDuplicates = true): T[] {
   // console.log(contacts.length, 'with duplicates')
 
   // remove duplicates by id
@@ -52,28 +54,42 @@ export async function removeDuplicatesById<T>(contacts: T[], saveDuplicates = tr
   return filtered
 }
 
+
+export function byName(results: Contact[], person: Partial<CreatePersonParams>) {
+  const lower = (name: string | null) => name && name.toLowerCase().split(' ').shift() || '';
+  const firstName = lower(person.firstName || '');
+  const lastName = lower(person.lastName || '');
+  return results.filter(r =>
+    (lower(r.firstName).includes(firstName) || firstName.includes(lower(r.firstName)) || lower(r.nickname) == firstName) &&
+    (lower(r.lastName).includes(lastName) || lastName.includes(lower(r.lastName)))
+  )
+  // remove last name to get more results (but is less accurate)
+}
+
+
+
 // Remove duplicates where first name, email (and phone) are the same
-export async function removeDuplicates(eventContacts: EventContact[], saveDuplicates = true): Promise<EventContact[]> {
+export function filterDuplicates(results: Contact[], returnDuplicates=true): Array<Contact[]> {
   // console.log(contacts.length, 'with duplicates')
 
   // remove duplicates by id
-  let duplicates: EventContact[] = [];
-  let groupedContacts: Array<EventContact[]> = groupArrayBy<EventContact>(eventContacts, 'Contact_ID');
-  eventContacts = groupedContacts.map((contacts: EventContact[]) => contacts[0])
+  let duplicates: Contact[] = [];
+  let groupedContacts: Array<Contact[]> = groupArrayBy<Contact>(results, 'contactID');
+  results = groupedContacts.map((contacts: Contact[]) => contacts[0])
 
   // remove duplicates by email address
-  groupedContacts = groupArrayBy<EventContact>(eventContacts, 'Email_Address');
-  eventContacts = groupedContacts.reduce((acc, contacts: EventContact[], i) => {
+  groupedContacts = groupArrayBy<Contact>(results, 'emailAddress');
+  results = groupedContacts.reduce((acc, contacts: Contact[], i) => {
 
     if (contacts.length === 1) acc = [...acc, ...contacts];
     else {
-      const groupedByName = groupArrayBy<EventContact>(contacts, "First_Name");
-      const filtered = groupedByName.reduce((accName, current: EventContact[]) => {
+      const groupedByName = groupArrayBy<Contact>(contacts, "firstName");
+      const filtered = groupedByName.reduce((accName, current: Contact[]) => {
         if (current.length === 1) return [...accName, ...current]
         else {
           // console.log('groupedByName', current)
 
-          const select = current.find(c => !!c.Mobile_Phone || !!c.Email_Address)
+          const select = current.find(c => !!c.mobilePhone || !!c.emailAddress)
           if (select) accName.push(select) // don't include if no phone or email address
           duplicates = duplicates.concat(current);
         }
@@ -88,15 +104,15 @@ export async function removeDuplicates(eventContacts: EventContact[], saveDuplic
 
 
   // remove duplicates by phone #
-  groupedContacts = groupArrayBy<EventContact>(eventContacts, 'Mobile_Phone');
-  eventContacts = groupedContacts.reduce((acc, contacts: EventContact[], i) => {
+  groupedContacts = groupArrayBy<Contact>(results, 'mobilePhone');
+  results = groupedContacts.reduce((acc, contacts: Contact[], i) => {
     if (contacts.length === 1) acc = [...acc, ...contacts];
     else {
-      const groupedByName = groupArrayBy<EventContact>(contacts, "First_Name");
-      const filtered = groupedByName.reduce((accName, current: EventContact[]) => {
+      const groupedByName = groupArrayBy<Contact>(contacts, "firstName");
+      const filtered = groupedByName.reduce((accName, current: Contact[]) => {
         if (current.length === 1) return [...accName, ...current]
         else {
-          const select = current.find(c => !!c.Mobile_Phone || !!c.Email_Address)
+          const select = current.find(c => !!c.mobilePhone || !!c.emailAddress)
           if (select) accName.push(select) // don't include if no phone or email address
           duplicates = duplicates.concat(current);
         }
@@ -109,12 +125,7 @@ export async function removeDuplicates(eventContacts: EventContact[], saveDuplic
     return acc;
   }, [])
 
-  // fs.writeFileSync(`./src/data/eventContacts.json`, JSON.stringify(eventContacts, null, '\t'));
-  // fs.writeFileSync(`./src/data/duplicates.json`, JSON.stringify(duplicates, null, '\t'));
-  saveDuplicates && fs.writeFileSync('src/data/duplicates.csv', await json2csv(duplicates, { emptyFieldValue: '' }));
-
-  console.log(eventContacts.length, 'excluding duplicates')
-  return eventContacts
+  return [results, duplicates];
 }
 
 
@@ -125,10 +136,3 @@ export async function removeOnline(contacts: EventContact[]): Promise<EventConta
   return contacts;
 }
 
-
-export function filterByName(response: Contact[] | Contact[], person: Attendee) {
-  const fullName = (p: Contact | Contact) => (p.Display_Name + ' ' + p.First_Name + ' ' + p.Nickname).toLowerCase()
-  const firstName = person.First_Name.toLowerCase().split(' ')[0]
-  const lastName = person.Last_Name.toLowerCase().split(' ')[0]
-  return response.filter((p: Contact | Contact) => fullName(p).includes(firstName) && fullName(p).includes(lastName)) // remove last name to get more results (but is more inaccurate)
-}

@@ -28,7 +28,7 @@ const BulkAttendeeModel = model<BulkAttendee>('Attendee', attendeeSchema);
 
 async function connectDB() {
 
-  db = await connect(dbUrl)
+  db = await connect(dbUrl + '/bulk')
     .then(db => db)
     .catch(err => {
       console.log("🛑 ", err.message);

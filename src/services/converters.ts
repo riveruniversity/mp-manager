@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { Lib } from '../api/lib';
-import { CarShowContact, EventContact, EventParticipant, EventFormResponse, BulkAttendee, Contact, YouthWeekParticipant } from "../types/MP";
+import { CarShowContact, EventContact, EventParticipant, FormResponseRecord, BulkAttendee, Contact, YouthWeekParticipant } from "../types/MP";
 import { Attendee } from '../types/Eventbrite';
 
 // Contact[] | CarShowContact[] | EventContact[] | YouthWeekParticipant[]
@@ -45,8 +45,8 @@ export async function attendeeToBulkTextFormat(attendees: Attendee[], eventName:
 }
 
 
-export function joinParticipantInfo(formResponses: EventFormResponse[], eventParticipants: EventParticipant[]): EventContact[] {
-  const eventContacts: EventContact[] | any = formResponses.map((response: EventFormResponse) => ({ ...response, ...eventParticipants.find((participant: EventParticipant) => participant.Contact_ID === response.Contact_ID)! }))
+export function joinParticipantInfo(formResponses: FormResponseRecord[], eventParticipants: EventParticipant[]): EventContact[] {
+  const eventContacts: EventContact[] | any = formResponses.map((response: FormResponseRecord) => ({ ...response, ...eventParticipants.find((participant: EventParticipant) => participant.Contact_ID === response.Contact_ID)! }))
   return eventContacts
     .map(Lib.trimData)
     .map(Lib.fixValues)

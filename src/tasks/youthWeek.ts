@@ -4,13 +4,14 @@ import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
 import { getYouthParticipants, updateContacts } from '../api/mp'
 import { removeDuplicates, removeGroupRegistrations, removeOnline, removeStaff } from '../services/filters';
-import { EventContact, EventFormResponse, EventParticipant, YouthWeekParticipant, YouthWeekRegistrationInfo } from '../types/MP';
+import { EventContact, FormResponseRecord, YouthWeekParticipant, YouthWeekRegistrationInfo } from '../types/MP';
 import { events, youthWeek } from '../config/vars'
 import { Lib } from '../api/lib';
 import { contactToBulkTextFormat } from '../services/converters';
 import { saveAttendees, saveDevAttendees } from '../services/db';
 
 import { formatNumber, getKeyByValue } from '../utils';
+import { EventParticipantRecord } from 'mp-api/dist/tables/event-participants';
 
 // >>> Settings
 const eventId = events.youthWeek;
@@ -71,7 +72,7 @@ async function saveParticipantsToDb(youthParticipants: YouthWeekParticipant[]) {
 
 async function loadEventParticipants() {
 
-  let eventParticipants: EventParticipant[] = (await getYouthParticipants(eventId))
+  let eventParticipants: EventParticipantRecord[] = (await getYouthParticipants(eventId))
   // .map(p => ({...p, ...{ Notes: '{}'}}));
   let eventContacts = await removeDuplicates(eventParticipants as EventContact[]);
   // - eventContacts = contacts.filter(contact => !!contact.First_Name)  // Checked in locally but didn't submit form.

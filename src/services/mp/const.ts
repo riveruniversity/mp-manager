@@ -1,0 +1,30 @@
+export const FORM_ID = 49;
+export const CONGREGATION_ID = 1;
+export const GROUP_IDS = {
+  RIVER_NURSERY: 410,
+  RIVER_BEARS: 411,
+  RIVER_KIDS: 412,
+  MINOR_WAIVER: 522,
+  WAIVER_COMPLETED: 550
+};
+export const PARTICIPANT_TYPES = {
+  GUEST: 4,
+  CHILD: 11
+};
+export const GENDER_IDS = {
+  MALE: 1,
+  FEMALE: 2
+};
+export const EVENT_PARTICIPANT_STATUSES = {
+  REGISTERED: 2
+};
+export const GROUP_ROLES = {
+  CLASS_MEMBER: 4
+};
+export const HOUSEHOLD_POSITIONS = {
+  HEAD_OF_HOUSEHOLD: 1,
+  CHILD_MINOR: 2
+};
+export const CONTACT_ATTRIBUTES = {
+  NEVER_ATTENDED: 73
+};

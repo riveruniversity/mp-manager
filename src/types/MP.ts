@@ -1,4 +1,6 @@
 import { PhoneNumber } from "libphonenumber-js";
+import { ContactRecord } from "mp-api/dist/tables/contacts";
+import { EventParticipantRecord } from "mp-api/dist/tables/event-participants";
 
 export interface Contact {
   Contact_ID: number;
@@ -40,33 +42,53 @@ export interface GroupContact {
   Img: Buffer;
 }
 
-export interface EventParticipant {
-  Contact_ID: number;
-  ID_Card: string | null;
-  Group_ID: number | null;
-  Household_Position_ID: number;
-  Attending_Online: boolean;
-  Event_Participant_ID: number,
-  Participant_ID: number,
-  Participation_Status_ID: number,
-  Notes: string;
-  Time_In: string | null;
-  // Phone_Number: string;
-}
 
-export interface EventFormResponse {
+
+export interface FormResponseRecord {
   // Form Response
+  Form_Response_ID: number;
+  Form_ID: number;
+  Response_Date: string;
+  IP_Address: string;
   Contact_ID: number;
-  ID_Card: string | null;
-  First_Name: string;
-  Last_Name: string;
-  Nickname?: string;
+  First_Name: string | null;
+  Last_Name: string | null;
   Email_Address: string | null;
-
   Phone_Number: string | null;
+  Address_Line_1: null;
+  Address_Line_2: null;
+  Address_City: null;
+  Address_State: null;
+  Address_Zip: null;
+  Event_ID: number;
+  Pledge_Campaign_ID: null;
+  Opportunity_ID: null;
+  Opportunity_Response: null;
+  Congregation_ID: number;
+  Notification_Sent: boolean;
+  Expires: null;
+  Event_Participant_ID: number;
 }
 
-export interface EventContact extends EventParticipant, EventFormResponse, Contact {
+
+export interface FormResponseAnswerRecord {
+  Form_Response_Answer_ID: number;
+  Form_Field_ID: number;
+  Response: string | null;
+  Form_Response_ID: number;
+  Event_Participant_ID: number;
+  Pledge_ID: number | null;
+  Opportunity_Response: null;
+  Placed: boolean;
+  Children?: string | null;
+}
+
+export interface EventContact extends EventParticipantRecord, FormResponseRecord, ContactRecord {
+
+}
+
+
+export interface FestParticipant extends EventParticipantRecord, FormResponseRecord, FormResponseAnswerRecord, ContactRecord {
 
 }
 
@@ -86,7 +108,7 @@ export interface CarShowContact {
 
 
 
-export interface YouthWeekParticipant extends EventParticipant, Contact {
+export interface YouthWeekParticipant extends EventParticipantRecord, Contact {
   Adult_Phone: string; // extracted from Participant.Notes
   Phone_Number: PhoneNumber | undefined;
   Type: YouthWeekRegistrationInfo['detail'];
@@ -104,7 +126,7 @@ export interface YouthWeekRegistrationInfo {
   emergencyContact: YouthWeekEmergencyContact;
   type?: string;
   churchOrGroup?: YouthWeekChurch;
-	qrCodePhone?: string;
+  qrCodePhone?: string;
 }
 
 
@@ -153,3 +175,27 @@ export interface BulkAttendee {
 export interface BulkAttendeeWithFile extends BulkAttendee {
   file: string;
 }
+
+
+
+
+export interface ContactAttribute {
+  Contact_Attribute_ID: number;
+  Contact_ID: number;
+  Attribute_ID: number;
+  Start_Date: string;
+  End_Date?: string | null;
+  Notes?: string | null;
+}
+
+export interface ContactParameter extends Partial<Contact> {
+  Contact_ID: number;
+}
+
+export interface ContactAttributeParameter extends Partial<ContactAttribute> {
+  Contact_ID: number;
+  Attribute_ID: number;
+  Start_Date: string;
+}
+
+
