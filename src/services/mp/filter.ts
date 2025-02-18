@@ -1,12 +1,13 @@
 //▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ RESULT FILTER ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 
-import { Contact } from "mp-api";
+import { Contact, ContactWithEmailAddress, ContactWithEmailAddresses } from "mp-api";
 import { groupArrayBy } from "../../utils";
 
 
 
+export function byName(response: (ContactWithEmailAddress | Contact)[], person: Partial<(ContactWithEmailAddress | Contact)>)
+  : (ContactWithEmailAddresses | Contact)[] {
 
-export function byName(response: Contact[], person: Partial<Contact>) {
   const lower = (name: string | null | undefined) => name?.toLowerCase().split(' ').shift();
   const firstName = lower(person.firstName);
   const lastName = lower(person.lastName);
@@ -19,7 +20,7 @@ export function byName(response: Contact[], person: Partial<Contact>) {
 }
 
 // Remove duplicates where first name, email (and phone) are the same
-export function splitDuplicates(person: Contact[], saveDuplicates = true): [Contact | undefined, Contact[]] {
+export function splitDuplicates(person: (ContactWithEmailAddress | Contact)[], saveDuplicates = true): [(ContactWithEmailAddress | Contact) | undefined, (ContactWithEmailAddress | Contact)[]] {
   // console.log(contacts.length, 'with duplicates')
 
   let unique: Contact | undefined;
@@ -27,13 +28,13 @@ export function splitDuplicates(person: Contact[], saveDuplicates = true): [Cont
 
   // remove duplicates by id
   let groupedContacts = groupArrayBy<Contact>(person, 'contactID');
-  person = groupedContacts.map((contacts) => contacts[0]);
+  let contact = groupedContacts.map((contacts) => contacts[0]);
 
-  if (person.length === 1) return [person[0], duplicates];
+  if (contact.length === 1) return [contact[0], duplicates];
 
   // remove duplicates by email address
-  groupedContacts = groupArrayBy<Contact>(person, 'emailAddress');
-  person = groupedContacts.reduce((acc: Contact[], contacts: Contact[]) => {
+  groupedContacts = groupArrayBy<Contact>(contact, 'emailAddress');
+  if (groupedContacts.length) contact = groupedContacts.reduce((acc: Contact[], contacts: Contact[]) => {
 
     if (contacts.length === 1) acc = [...acc, ...contacts];
     else {
@@ -57,12 +58,12 @@ export function splitDuplicates(person: Contact[], saveDuplicates = true): [Cont
   }, []);
 
 
-  if (person.length === 1) return [person[0], duplicates];
+  if (contact.length === 1) return [contact[0], duplicates];
 
 
   // remove duplicates by phone #
-  groupedContacts = groupArrayBy<Contact>(person, 'mobilePhone');
-  person = groupedContacts.reduce((acc: Contact[], contacts: Contact[], i) => {
+  groupedContacts = groupArrayBy<Contact>(contact, 'mobilePhone');
+  if (groupedContacts.length) contact = groupedContacts.reduce((acc: Contact[], contacts: Contact[], i) => {
     if (contacts.length === 1) acc = [...acc, ...contacts];
     else {
       const groupedByName = groupArrayBy<Contact>(contacts, "firstName");
@@ -85,8 +86,9 @@ export function splitDuplicates(person: Contact[], saveDuplicates = true): [Cont
     return acc;
   }, []);
 
-  unique = person.shift();
-  if (person.length) duplicates.concat(duplicates, person);
+  unique = contact.shift();
+  if (contact.length)
+    duplicates = [...duplicates, ...contact, unique!];
 
   return [unique, duplicates];
 }

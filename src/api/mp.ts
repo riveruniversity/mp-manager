@@ -39,7 +39,7 @@ export function getContact(filtr: string) {
 export function getContactSignedWaiver(filtr: string) {
 
   const table = `Group_Participants`;
-  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}`;
+  const select = `$select=${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}, ${G.First_Name}, ${G.Last_Name}, ${G.Nickname}, ${G.Mobile_Phone}, ${G.Email_Address}, ${G.Household_Position_ID}`;
   const filter = `&$filter=${Signed_Waiver} AND ${filtr} AND ${Exclude_Minors} AND ${Exclude_Defaults}`;
   const top = `&$top=5000`;
 
@@ -51,18 +51,18 @@ export function getContactSignedWaiver(filtr: string) {
 export function getBlankCardIds() {
 
   const table = `Group_Participants`;
-  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}e`;
-  const filter = `&$filter=Group_ID=${group.waiver} AND ${C.ID_Card} IS null AND ${Exclude_Defaults}`;
+  const select = `$select=${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}e`;
+  const filter = `&$filter=Group_ID=${group.waiver} AND ${G.ID_Card} IS null AND ${Exclude_Defaults}`;
   const top = `&$top=5000`;
 
   return request(table, { method: 'get', select, filter, top });
 }
 //: --------------------------------------------------------
 
-export function getAllRiverMembers(): Promise<GroupContact[]> {
+export function getRiverMembersByGroup(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Image}`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.ID_Card}, ${G.First_Name}, ${G.Last_Name}, ${G.Mobile_Phone}, ${G.Email_Address}, ${G.Image}`;
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults} `; // AND Participant_ID_Table.Participant_Engagement_ID=1 // AND Not ${Field.ID_Card} Like 'M-%'
   const top = `&$top=10000`;
 
@@ -74,7 +74,7 @@ export function getAllRiverMembers(): Promise<GroupContact[]> {
 export function getAllRiverMembersSignedWaiver(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Image}`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.ID_Card}, ${G.First_Name}, ${G.Last_Name}, ${G.Mobile_Phone}, ${G.Email_Address}, ${G.Image}`;
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member},${group.staff},${group.intern},${group.contractor}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults} `; // AND Participant_ID_Table.Participant_Engagement_ID=1 // AND Not ${Field.ID_Card} Like 'M-%'
   const top = `&$top=10000`;
 
@@ -86,7 +86,7 @@ export function getAllRiverMembersSignedWaiver(): Promise<GroupContact[]> {
 export function getRiverMembers_ByGroupParticipant() {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}`;
   const filter = `&$filter=Group_Participants.Group_ID IN (${group.waiver},${group.member}) AND ${Exclude_Trespassed} AND ${Exclude_Defaults}`; // AND ${Field.Contact_ID}=126634
   const top = `&$top=10000`;
 
@@ -95,11 +95,26 @@ export function getRiverMembers_ByGroupParticipant() {
 //: --------------------------------------------------------
 
 
+
 export function getRiverAttendees() {
+
+  const table = `Contacts`;
+  const select = `$select=*`;
+  const filter = `&$filter=${C.Attendees} AND NOT ${C.ID_Card_Set} AND ${C.Exclude_Defaults}`; //AND Contact_ID_Table.ID_Card is null AND Participant_End_Date is null
+  const top = `&$top=50000`;
+
+  return request(table, { method: 'get', select, filter, top });
+}
+
+
+
+
+
+export function getRiverAttendeesByParticipant() {
 
   const table = `Participants`;
   const select = `$select=*`;
-  const filter = `&$filter=(Participant_Type_ID=2 OR Participant_Type_ID=4) AND NOT (Contact_ID_Table.ID_Card LIKE 'S-%' OR Contact_ID_Table.ID_Card LIKE 'C-%' OR Contact_ID_Table.ID_Card LIKE 'A-%') AND Participant_ID > 5`;
+  const filter = `&$filter=${PTypes.Attendees} AND NOT ${PTypes.ID_Card_Set} AND Participant_ID > 5`; //AND Contact_ID_Table.ID_Card is null AND Participant_End_Date is null
   const top = `&$top=50000`;
 
   return request(table, { method: 'get', select, filter, top });
@@ -110,7 +125,7 @@ export function getRiverMembers() {
 
   const table = `Participants`;
   const select = `$select=*`;
-  const filter = `&$filter=Participant_Type_ID=9 AND NOT (Contact_ID_Table.ID_Card LIKE 'S-%' OR Contact_ID_Table.ID_Card LIKE 'C-%' OR Contact_ID_Table.ID_Card LIKE 'M-%') AND Participant_ID > 5`;
+  const filter = `&$filter=${PTypes.Members} AND NOT ${PTypes.ID_Card_Set} AND Participant_ID > 5`; //AND Contact_ID_Table.Contact_Status_ID=2
   const top = `&$top=50000`;
 
   return request(table, { method: 'get', select, filter, top });
@@ -121,7 +136,7 @@ export function getRiverMembers() {
 export function getSignedWaiver() {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.Display_Name}`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.Display_Name}`;
   const filter = `&$filter=${Signed_Waiver} AND ${Exclude_Trespassed} AND ${Exclude_Defaults}`; // AND ${Field.Contact_ID}=126634
   const top = `&$top=100000`;
 
@@ -134,7 +149,7 @@ export function getSignedWaiver() {
 export function getRmiContractors(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Email_Address}`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}, ${G.First_Name}, ${G.Last_Name}, ${G.Mobile_Phone}, ${G.Email_Address}`;
   const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID =${group.contractor} AND Group_Participants.End_Date is null`;
   const top = `&$top=1000`;
 
@@ -146,8 +161,8 @@ export function getRmiContractors(): Promise<GroupContact[]> {
 export function getRiverStaff(): Promise<GroupContact[]> {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Mobile_Phone}, ${C.Email_Address}, Participant_ID_Table_Contact_ID_Table.Participant_Record`;
-  const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff}) AND Group_Participants.End_Date is null AND NOT ${C.ID_Card} LIKE 'S%'`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}, ${G.First_Name}, ${G.Last_Name}, ${G.Mobile_Phone}, ${G.Email_Address}, Participant_ID_Table_Contact_ID_Table.Participant_Record`;
+  const filter = `&$filter=Group_Participants.Participant_ID = Participant_ID_Table_Contact_ID_Table.Participant_Record AND Group_Participants.Group_ID IN (${group.staff}) AND Group_Participants.End_Date is null AND NOT ${G.ID_Card} LIKE 'S%'`;
   const top = `&$top=1000`;
 
   return request(table, { method: 'get', select, filter, top });
@@ -158,7 +173,7 @@ export function getRiverStaff(): Promise<GroupContact[]> {
 export function getPreregisteredGroups() {
 
   const table = `Group_Participants`;
-  const select = `$select=Group_Participants.Group_ID, ${C.Contact_ID}, ${C.Display_Name}`;
+  const select = `$select=Group_Participants.Group_ID, ${G.Contact_ID}, ${G.Display_Name}`;
   const filter = `&$filter=Group_Participants.Group_ID=542 AND ${Exclude_Trespassed} AND ${Exclude_Defaults}`;
   const top = `&$top=100000`;
 
@@ -171,7 +186,7 @@ export function getPreregisteredGroups() {
 export function getEventParticipants(eid: number): Promise<EventParticipantRecord[]> {
 
   const table = `Event_Participants`;
-  const select = `$select=Event_Participants.Group_ID, Event_Participants.Notes, ${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}`;
+  const select = `$select=Event_Participants.Group_ID, Event_Participants.Notes, ${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}, ${G.First_Name}, ${G.Last_Name}, ${G.Nickname}, ${G.Mobile_Phone}, ${G.Email_Address}, ${G.Household_Position_ID}`;
   const filter = `&$filter=Event_ID=${eid}`; // AND ${Signed_Waiver}  AND Attending_Online='false' // AND Participant_ID_Table_Contact_ID_Table.ID_Card NOT Like 'C%'
   const top = `&$top=20000`;
 
@@ -196,7 +211,7 @@ export function findEventParticipants(filtr: string): Promise<(EventParticipantR
 export async function getYouthParticipants(eid: number): Promise<EventParticipantRecord[]> {
 
   const table = `Event_Participants`;
-  const select = `$select=${C.Contact_ID}, ${C.ID_Card}, ${C.Display_Name}, ${C.First_Name}, ${C.Last_Name}, ${C.Nickname}, ${C.Mobile_Phone}, ${C.Email_Address}, ${C.Household_Position_ID}, Event_Participants.Group_ID, Event_Participants.Notes, Group_ID_Table.Group_Name, ${P.Member_Status}, Event_Participants._Setup_Date As [Registered_At], ${C.Created_Date}, Time_In`;
+  const select = `$select=${G.Contact_ID}, ${G.ID_Card}, ${G.Display_Name}, ${G.First_Name}, ${G.Last_Name}, ${G.Nickname}, ${G.Mobile_Phone}, ${G.Email_Address}, ${G.Household_Position_ID}, Event_Participants.Group_ID, Event_Participants.Notes, Group_ID_Table.Group_Name, ${G.Member_Status}, Event_Participants._Setup_Date As [Registered_At], ${G.Created_Date}, Time_In`;
   const filter = `&$filter=Event_ID=${eid} AND Event_Participants.Participation_Status_ID <> 5 `; //
   // AND ${Signed_Waiver}  AND Attending_Online='false' || AND Participant_ID_Table_Contact_ID_Table.ID_Card NOT Like 'C%'  || 5=Cancelled ||  AND Event_Participants.Notes Is Not null || AND Mobile_Phone is null
   const top = `&$top=20000`;
@@ -327,7 +342,7 @@ async function request(table: string, param: RequestParameter) {
 }
 //: --------------------------------------------------------
 
-export const C = {
+export const G = {
   Contact_ID: `Participant_ID_Table_Contact_ID_Table.Contact_ID`,
   ID_Card: `Participant_ID_Table_Contact_ID_Table.ID_Card`,
   First_Name: `Participant_ID_Table_Contact_ID_Table.First_Name`,
@@ -339,14 +354,26 @@ export const C = {
   Image: `Participant_ID_Table_Contact_ID_Table.dp_fileUniqueId Image`,
   Created_Date: `Participant_ID_Table_Contact_ID_Table._Contact_Setup_Date`,
   Household_ID: `Participant_ID_Table_Contact_ID_Table.Household_ID`,
-  Household_Position_ID: `Participant_ID_Table_Contact_ID_Table.Household_Position_ID`
-
-};
-
-
-export const P = {
+  Household_Position_ID: `Participant_ID_Table_Contact_ID_Table.Household_Position_ID`,
   Member_Status: `Participant_ID_Table_Member_Status_ID_Table.Member_Status`
 };
+
+
+export const PTypes = {
+  Attendees: `(${[2, 4, 10, 15, 17].map(id => `Participant_Type_ID=${id}`).join(' OR ')})`,
+  Members: `(${[9, 20, 23, 24].map(id => `Participant_Type_ID=${id}`).join(' OR ')})`,
+  ID_Card_Set: `(${['S', 'C', 'M', 'A'].map(str => `Contact_ID_Table.ID_Card LIKE '${str}-%'`).join(' OR ')})`,
+};
+
+export const C = {
+  Attendees: `(${[2, 4, 10, 15, 17].map(id => `Participant_Record_Table.Participant_Type_ID=${id}`).join(' OR ')})`, // `(Participant_Record_Table.Participant_Type_ID=2 OR Participant_Record_Table=4 OR Participant_Record_Table=10 OR Participant_Record_Table=15 OR Participant_Record_Table=17)`,
+  Members: `(${[9, 20, 23, 24].map(id => `Participant_Record_Table.Participant_Type_ID=${id}`).join(' OR ')})`,
+  ID_Card_Set: `(${['S', 'C', 'M', 'A'].map(str => `Contacts.ID_Card LIKE '${str}-%'`).join(' OR ')})`,
+  Exclude_Defaults: `Contacts.Contact_ID > 20 AND Participant_Record > 5`
+};
+
+
+
 
 const Exclude_Minors = `NOT Participant_ID_Table_Contact_ID_Table.Household_Position_ID=2`;
 const Exclude_Defaults = `NOT Participant_ID_Table_Contact_ID_Table.Contact_ID<20`;

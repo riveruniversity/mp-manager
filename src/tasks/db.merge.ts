@@ -1,4 +1,3 @@
-import { getRiverMembers, getRiverStaff, getAllRiverMembers, updateContacts, ContactParameter } from '../api/mp'
 import * as fs from 'fs'
 import { removeDuplicatesById, removeDuplicates, removeOnline, removeStaff } from '../services/filters';
 import { GroupContact } from '../types/MP';

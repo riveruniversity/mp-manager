@@ -1,4 +1,4 @@
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, getImage, getRmiContractors, getRiverAttendees } from '../api/mp'
+import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getImage, getRmiContractors, getRiverAttendees } from '../api/mp'
 import { attendeeToBulkTextFormat, contactToBulkTextFormat } from '../services/converters';
 import { events } from '../config/vars'
 import { Lib } from '../api/lib';

@@ -33,7 +33,7 @@ function createFormResponseAnswers() {
 }
 
 function updateContacts() {
-  mp.updateContacts([{ contactID: 305590, genderID: 1, idCard: 'C' + 305590 }])
+  mp.updateContacts([{ contactID: 305590, genderID: 1, idCard: 'A-' + 305590 }])
     .then(res => res && 'error' in res ? console.log(res.error) : console.log(res))
     .catch(err => console.log(err));
 }
@@ -56,9 +56,14 @@ function getContactsWithEmailAddresses() {
     .catch(err => console.log(err));
 }
 
+function getContactDetails() {
+  mp.getContactDetails(126634)
+    .then(res => res && 'error' in res ? console.log(res.error) : console.log(res))
+    .catch(err => console.log(err));
+}
 
-// findContact({ firstName: 'Aaliyah', lastName: 'Montoya', emailAddress: 'graceontopofgrace123@gmail.com' })
-//   .then(contact => console.log(contact))
-//   .catch(err => console.log(err));
+findContact({ firstName: 'Aaliyah', lastName: 'Montoya', emailAddress: 'graceontopofgrace123@gmail.com' })
+  .then(contact => console.log(contact))
+  .catch(err => console.log(err));
 
-getContactsWithEmailAddresses();
+getContactDetails();
