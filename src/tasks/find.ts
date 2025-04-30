@@ -1,5 +1,5 @@
 
-import { getContact } from '../api/mp'
+import { getContactDetails } from '../api/mp'
 import { importCsv } from './import'
 import { formatPhone, sleep } from '../utils';
 import { Contact, EventContact } from '../types/MP';
@@ -31,13 +31,13 @@ const eventbriteId: number = 934713893417;
     var res: Contact[] = [];
 
     if (person.Mobile_Phone) {
-      res = await getContact(`Contacts.Mobile_Phone='${formatPhone(person.Mobile_Phone)}'`);
+      res = await getContactDetails(`Contacts.Mobile_Phone='${formatPhone(person.Mobile_Phone)}'`);
     }
 
     if (res?.length) {
       // console.log(person.Mobile_Phone || person.First_Name + ' ' + person.Last_Name, ': found by phone ✅', res.length);
     } else if (person.Email_Address) {
-      res = await getContact(`Contacts.Email_Address='${person.Email_Address}'`);
+      res = await getContactDetails(`Contacts.Email_Address='${person.Email_Address}'`);
       if (res?.length) {
         // console.log(person.Mobile_Phone || person.First_Name + ' ' + person.Last_Name, ': found by email ✅', res.length)
       }

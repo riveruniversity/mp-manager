@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import { json2csv, Json2CsvOptions } from 'json-2-csv';
 
-import { getPreregisteredGroups, getRiverStaff, getSignedWaiver } from "../api/mp";
+import { getPreregisteredGroups, getRmiStaff, getSignedWaiver } from "../api/mp";
 import { EventContact, FestParticipant, GroupContact } from "../types/MP";
 import { Attendee } from "../types/Eventbrite";
 import { group, youthWeek } from '../config/vars'
@@ -16,7 +16,7 @@ export function noStaff(contacts: GroupContact[]) {
 }
 
 export async function removeStaff(contacts: EventContact[]): Promise<EventContact[]> {
-  const staff: GroupContact[] = await getRiverStaff();
+  const staff: GroupContact[] = await getRmiStaff();
   contacts = contacts.filter(contact => !staff.find(staff => staff.Contact_ID === contact.Contact_ID))
   console.log(contacts.length, 'excluding staff')
   return contacts

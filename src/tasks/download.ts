@@ -1,4 +1,4 @@
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, getImage } from '../api/mp';
+import { getBlankCardIds, getFormResponses, getRiverMembers, getRmiStaff, getAllRiverMembers, getImage } from '../api/mp';
 import { contactToBulkTextFormat } from '../services/converters';
 import { EventContact } from '../types/MP';
 
@@ -9,7 +9,7 @@ const fileName: string = `staff`;
 
 (async function getStaff() {
 
-  const contacts = await getRiverStaff() as unknown as EventContact[];
+  const contacts = await getRmiStaff() as unknown as EventContact[];
   if (!contacts) return
 
   console.log(`${contacts.length} contacts`)

@@ -1,4 +1,4 @@
-import { getBlankCardIds, getFormResponses, getRiverMembers, getRiverStaff, getAllRiverMembers, putCardId, getImage } from '../api/mp'
+import { getFormResponses, getRiverMembers, getRmiStaff, getAllRiverMembers, putCardId, getImage } from '../api/mp'
 import * as fs from 'fs'
 
 import { GroupContact } from '../types/MP'

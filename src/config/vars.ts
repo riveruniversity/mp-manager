@@ -23,12 +23,10 @@ export const events = {
 
 
 export const group = {
-  member: 504,
   staff: 490,
   contractor: 491,
   intern: 363,
-  waiver: 500,
-  waiver2023: 530,
+  waiver: 550,
   trespassed: 527
 };
 

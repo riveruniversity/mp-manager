@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { updateContacts, getContact, createAttributes, findEventParticipants } from '../api/mp';
+import { updateContacts, getContactDetails, createAttributes, findEventParticipants } from '../api/mp';
 import { Contact, ContactAttributeParameter, ContactParameter } from '../types/MP';
 import { ContactRecord } from 'mp-api/dist/tables/contacts';
 import { EventParticipantRecord } from 'mp-api/dist/tables/event-participants';
@@ -7,7 +7,7 @@ import { ParticipantRecord } from 'mp-api/dist/tables/participants';
 // import { } from 'mp-api'
 
 async function fixEmail() {
-  let contacts: Contact[] = await getContact(`Contacts.Email_Address Like '%@gmail.co'`);
+  let contacts: Contact[] = await getContactDetails(`Contacts.Email_Address Like '%@gmail.co'`);
   console.log('contacts', contacts.length);
 
   const updateParams: ContactParameter[] = contacts
