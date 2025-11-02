@@ -1,6 +1,6 @@
 import { CreateFormResponseAnswerParams } from "mp-api";
 import { mp } from "../services/mp/api";
-import { findContact } from "../services/mp/find";
+// import { findContact } from "../services/mp/find";
 
 function getEvent() {
   mp.getEvent(70551)
@@ -62,8 +62,16 @@ function getContactDetails() {
     .catch(err => console.log(err));
 }
 
-findContact({ firstName: 'Aaliyah', lastName: 'Montoya', emailAddress: 'graceontopofgrace123@gmail.com' })
-  .then(contact => console.log(contact))
-  .catch(err => console.log(err));
+// findContact({ firstName: 'Aaliyah', lastName: 'Montoya', emailAddress: 'graceontopofgrace123@gmail.com' })
+//   .then(contact => console.log(contact))
+//   .catch(err => console.log(err));
 
-getContactDetails();
+// getContactDetails();
+
+function updateManyContacts() {
+  const recs = [
+  {"contactID": 187697, "planningCenterID": 153521751},
+];
+
+recs.forEach(record => mp.updateContacts([record]).catch(err => console.log(err)))
+}
