@@ -50,7 +50,7 @@ export async function getRiverMembers(): Promise<Contact[]> {
 
   const table = `Contacts`;
   const select = `$select=*`;
-  const filter = `&$filter=${C.Members} AND  ${C.ID_Card_Unset} AND ${C.Engaged} AND ${C.Exclude_Defaults}`; //AND Contact_ID_Table.Contact_Status_ID=2
+  const filter = `&$filter=${C.MemberType} AND ${C.MemberStatus} AND ${C.ID_Card_Unset} AND ${C.Exclude_Defaults}`; //AND Contact_ID_Table.Contact_Status_ID=2
   const top = `&$top=50000`;
 
   return request(table, { method: 'get', select, filter, top });
@@ -274,7 +274,8 @@ export const G = {
 
 export const C = {
   Attendees: `(${[2, 4, 10, 15, 17, 11].map(id => `Participant_Record_Table.Participant_Type_ID=${id}`).join(' OR ')})`, // `(Participant_Record_Table.Participant_Type_ID=2 OR Participant_Record_Table=4 OR Participant_Record_Table=10 OR Participant_Record_Table=15 OR Participant_Record_Table=17)`,
-  Members: `(${[9, 20, 23, 24, 14].map(id => `Participant_Record_Table.Participant_Type_ID=${id}`).join(' OR ')})`,
+  MemberType: `(${[9, 20, 23, 24, 14].map(id => `Participant_Record_Table.Participant_Type_ID=${id}`).join(' OR ')})`,
+  MemberStatus: `(Participant_Record_Table.Member_Status_ID=1)`,
   ID_Card_Unset: `(${['S', 'C', 'M', 'A'].map(str => `Contacts.ID_Card NOT LIKE '${str}-%'`).join(' AND ')} OR Contacts.ID_Card IS Null)`,
   Exclude_Defaults: `Contacts.Contact_ID > 20 AND Participant_Record > 5`,
   Engaged: `Participant_Record_Table.Participant_Engagement_ID=1`
